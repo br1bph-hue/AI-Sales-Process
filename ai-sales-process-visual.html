@@ -61,6 +61,30 @@
             margin: 0 auto;
         }
 
+        .circular-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .connection-line {
+            stroke: #667eea;
+            stroke-width: 2;
+            stroke-dasharray: 5, 5;
+            opacity: 0.4;
+            fill: none;
+        }
+
+        .circle-path {
+            stroke: #764ba2;
+            stroke-width: 3;
+            fill: none;
+            opacity: 0.2;
+        }
+
         .seam-core {
             position: absolute;
             width: 280px;
@@ -145,6 +169,18 @@
             width: 100%;
             max-width: 900px;
             margin: 0 auto;
+            position: relative;
+        }
+
+        .pyramid-visual {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.1;
+            pointer-events: none;
         }
 
         .pyramid-level {
@@ -154,11 +190,49 @@
             color: white;
             position: relative;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .pyramid-level:hover {
+            transform: translateX(10px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .pyramid-level::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-right: 20px solid currentColor;
+            opacity: 0.5;
         }
 
         .pyramid-level h4 {
             font-size: 1.4em;
             margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .pyramid-level h4::before {
+            content: attr(data-phase);
+            background: rgba(255,255,255,0.3);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            flex-shrink: 0;
+            border: 3px solid rgba(255,255,255,0.5);
         }
 
         .pyramid-level p {
@@ -210,11 +284,28 @@
         .old-way {
             color: #d9534f;
             font-style: italic;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .old-way::before {
+            content: '❌';
+            position: absolute;
+            left: 5px;
+            font-style: normal;
         }
 
         .ai-way {
             color: #5cb85c;
             font-weight: 600;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .ai-way::before {
+            content: '✨';
+            position: absolute;
+            left: 5px;
         }
 
         .discipline-name {
@@ -237,11 +328,25 @@
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .roi-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         .roi-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         .roi-card h4 {
@@ -249,6 +354,14 @@
             margin-bottom: 15px;
             border-bottom: 2px solid rgba(255,255,255,0.3);
             padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .roi-card h4::before {
+            content: '📊';
+            font-size: 1.5em;
         }
 
         .roi-card p {
@@ -286,6 +399,39 @@
             font-weight: bold;
             color: #667eea;
             font-size: 1.1em;
+            position: relative;
+            padding-left: 35px;
+        }
+
+        .seam-stage::before {
+            position: absolute;
+            left: 5px;
+            font-size: 1.2em;
+        }
+
+        .seam-table tbody tr:nth-child(1) .seam-stage::before { content: '🏗️'; }
+        .seam-table tbody tr:nth-child(2) .seam-stage::before { content: '⚡'; }
+        .seam-table tbody tr:nth-child(3) .seam-stage::before { content: '🚀'; }
+        .seam-table tbody tr:nth-child(4) .seam-stage::before { content: '📈'; }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .process-step {
+            animation: fadeInUp 0.6s ease-out;
         }
 
         @media (max-width: 900px) {
@@ -358,6 +504,37 @@
         <div class="section">
             <h2>🔄 AI-Enabled Sales Cycle: 10 Core Disciplines</h2>
             <div class="circular-container">
+                <!-- SVG for visual connections -->
+                <svg class="circular-svg" viewBox="0 0 800 800">
+                    <!-- Outer circle path -->
+                    <circle cx="400" cy="400" r="330" class="circle-path"/>
+
+                    <!-- Connection lines from center to each step -->
+                    <line x1="400" y1="400" x2="400" y2="70" class="connection-line"/>
+                    <line x1="400" y1="400" x2="630" y2="130" class="connection-line"/>
+                    <line x1="400" y1="400" x2="710" y2="270" class="connection-line"/>
+                    <line x1="400" y1="400" x2="710" y2="530" class="connection-line"/>
+                    <line x1="400" y1="400" x2="630" y2="670" class="connection-line"/>
+                    <line x1="400" y1="400" x2="400" y2="730" class="connection-line"/>
+                    <line x1="400" y1="400" x2="170" y2="670" class="connection-line"/>
+                    <line x1="400" y1="400" x2="90" y2="530" class="connection-line"/>
+                    <line x1="400" y1="400" x2="90" y2="270" class="connection-line"/>
+                    <line x1="400" y1="400" x2="170" y2="130" class="connection-line"/>
+
+                    <!-- Circular arrow path -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#764ba2" />
+                        </marker>
+                    </defs>
+                    <path d="M 400 70 A 330 330 0 1 1 399 70"
+                          stroke="#764ba2"
+                          stroke-width="2"
+                          fill="none"
+                          opacity="0.6"
+                          marker-end="url(#arrowhead)"/>
+                </svg>
+
                 <div class="seam-core">
                     <h3>SEAM</h3>
                     <div class="seam-letters">
@@ -492,28 +669,28 @@
             <div class="pyramid-container">
                 <div class="pyramid-level level-4">
                     <span class="duration">270–365 days</span>
-                    <h4>Phase 4: Optimize</h4>
+                    <h4 data-phase="4">Phase 4: Optimize</h4>
                     <p><strong>Focus:</strong> Predictive coaching, proactive alerts<br>
                     <strong>Output:</strong> Fully AI-enabled system with continuous optimization</p>
                 </div>
 
                 <div class="pyramid-level level-3">
                     <span class="duration">180–270 days</span>
-                    <h4>Phase 3: Augment</h4>
+                    <h4 data-phase="3">Phase 3: Augment</h4>
                     <p><strong>Focus:</strong> Introduce AI agents for prep and recap<br>
                     <strong>Output:</strong> Intelligent coaching and automated insights</p>
                 </div>
 
                 <div class="pyramid-level level-2">
                     <span class="duration">90–180 days</span>
-                    <h4>Phase 2: Automate</h4>
+                    <h4 data-phase="2">Phase 2: Automate</h4>
                     <p><strong>Focus:</strong> Add AI summaries and call recommendations<br>
                     <strong>Output:</strong> Time savings and enhanced visibility</p>
                 </div>
 
                 <div class="pyramid-level level-1">
                     <span class="duration">0–90 days</span>
-                    <h4>Phase 1: Simplify</h4>
+                    <h4 data-phase="1">Phase 1: Simplify</h4>
                     <p><strong>Focus:</strong> Create structured reviews and dashboards<br>
                     <strong>Output:</strong> Foundational data and discipline</p>
                 </div>
