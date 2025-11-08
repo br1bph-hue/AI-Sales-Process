@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Test - AI Sales Process</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Visual Rendering Test</h1>
+
+    <div class="test-box">
+        <h2>Test 1: Basic HTML ✓</h2>
+        <p class="success">If you can see this, basic HTML is rendering correctly.</p>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 2: CSS Styles ✓</h2>
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px;">
+            <p class="success">If this box has a purple gradient background, CSS is working.</p>
+        </div>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 3: Positioning ✓</h2>
+        <div style="position: relative; width: 300px; height: 300px; border: 2px solid #ccc; margin: 20px auto;">
+            <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 80px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                Top
+            </div>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100px; height: 100px; background: #764ba2; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                Center
+            </div>
+        </div>
+        <p class="success">If you see circles positioned correctly above, absolute positioning works.</p>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 4: Table ✓</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #667eea; color: white;">
+                    <th style="padding: 10px; text-align: left;">Column 1</th>
+                    <th style="padding: 10px; text-align: left;">Column 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #ccc;">Data 1</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #ccc;">Data 2</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="success">If you see a formatted table above, tables are rendering.</p>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 5: Grid Layout ✓</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 20px 0;">
+            <div style="background: #667eea; color: white; padding: 20px; border-radius: 10px;">Card 1</div>
+            <div style="background: #764ba2; color: white; padding: 20px; border-radius: 10px;">Card 2</div>
+            <div style="background: #667eea; color: white; padding: 20px; border-radius: 10px;">Card 3</div>
+        </div>
+        <p class="success">If you see three cards in a row above, grid layout works.</p>
+    </div>
+
+    <div class="test-box">
+        <h2>JavaScript Test</h2>
+        <button onclick="alert('JavaScript is working!')">Click to Test JS</button>
+        <p id="js-test"></p>
+    </div>
+
+    <script>
+        document.getElementById('js-test').innerHTML = '<span class="success">✓ JavaScript is enabled and working</span>';
+    </script>
+
+    <div class="test-box">
+        <h2>Conclusion</h2>
+        <p><strong>If all tests above show success, your browser can render the full visualization.</strong></p>
+        <p>If any tests failed, please note which ones and what you see instead.</p>
+    </div>
+</body>
+</html>

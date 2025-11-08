@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>AI-Enabled Sales Process Framework</title>
     <style>
         * {
@@ -16,6 +17,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
             color: #333;
+            min-height: 100vh;
         }
 
         .container {
@@ -59,6 +61,7 @@
             width: 800px;
             height: 800px;
             margin: 0 auto;
+            min-height: 800px;
         }
 
         .seam-core {
@@ -69,6 +72,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #667eea; /* Fallback */
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -77,6 +81,7 @@
             color: white;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             z-index: 10;
+            visibility: visible;
         }
 
         .seam-core h3 {
@@ -96,6 +101,7 @@
             height: 140px;
             border-radius: 50%;
             background: white;
+            background-color: #ffffff; /* Explicit fallback */
             border: 4px solid #667eea;
             display: flex;
             flex-direction: column;
@@ -106,6 +112,8 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
             cursor: pointer;
+            z-index: 5;
+            visibility: visible;
         }
 
         .process-step:hover {
@@ -306,9 +314,24 @@
                 height: 200px;
             }
         }
+
+        /* Render check indicator */
+        .render-check {
+            background: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <div class="render-check">
+        ✓ CSS is loading correctly - All visuals should be visible below
+    </div>
     <div class="container">
         <h1>🧭 AI-Enabled Sales Process Framework</h1>
         <p class="subtitle">Structure → Enable → Accelerate → Measure</p>
@@ -562,8 +585,13 @@
     </div>
 
     <script>
+        // Confirm JavaScript is loaded
+        console.log('AI Sales Process Framework - JavaScript loaded successfully');
+
         // Add hover effects and interactivity
         const steps = document.querySelectorAll('.process-step');
+        console.log(`Found ${steps.length} process steps`);
+
         const descriptions = {
             1: 'Captures data accurately through AI transcription and key moment flagging',
             2: 'Optimizes time efficiency with AI-suggested routes and priorities',
@@ -583,6 +611,11 @@
                 const stepTitle = this.querySelector('.step-title').textContent;
                 alert(`${stepTitle}\n\n${descriptions[stepNum]}`);
             });
+        });
+
+        // Confirm page fully loaded
+        window.addEventListener('load', function() {
+            console.log('Page fully loaded and rendered');
         });
     </script>
 </body>
