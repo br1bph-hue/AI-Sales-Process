@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Enabled Sales Process Framework</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+
+        .section {
+            margin-bottom: 60px;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        /* Circular Diagram */
+        .circular-container {
+            position: relative;
+            width: 800px;
+            height: 800px;
+            margin: 0 auto;
+        }
+
+        .seam-core {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .seam-core h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .seam-letters {
+            font-size: 0.9em;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .process-step {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid #667eea;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .process-step:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            border-color: #764ba2;
+        }
+
+        .step-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .step-title {
+            font-size: 0.75em;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.2;
+        }
+
+        /* Position each step in a circle */
+        .step-1 { top: 0; left: 50%; transform: translateX(-50%); }
+        .step-2 { top: 60px; right: 100px; }
+        .step-3 { top: 200px; right: 20px; }
+        .step-4 { bottom: 200px; right: 20px; }
+        .step-5 { bottom: 60px; right: 100px; }
+        .step-6 { bottom: 0; left: 50%; transform: translateX(-50%); }
+        .step-7 { bottom: 60px; left: 100px; }
+        .step-8 { bottom: 200px; left: 20px; }
+        .step-9 { top: 200px; left: 20px; }
+        .step-10 { top: 60px; left: 100px; }
+
+        /* Roadmap Pyramid */
+        .pyramid-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .pyramid-level {
+            margin-bottom: 15px;
+            padding: 25px 40px;
+            border-radius: 10px;
+            color: white;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .pyramid-level h4 {
+            font-size: 1.4em;
+            margin-bottom: 8px;
+        }
+
+        .pyramid-level p {
+            font-size: 0.95em;
+            opacity: 0.95;
+        }
+
+        .pyramid-level .duration {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: rgba(255,255,255,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .level-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 100%; }
+        .level-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); width: 90%; margin-left: 5%; }
+        .level-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); width: 80%; margin-left: 10%; }
+        .level-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); width: 70%; margin-left: 15%; }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: left;
+            font-size: 1.2em;
+        }
+
+        .comparison-table td {
+            padding: 18px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9ff;
+        }
+
+        .old-way {
+            color: #d9534f;
+            font-style: italic;
+        }
+
+        .ai-way {
+            color: #5cb85c;
+            font-weight: 600;
+        }
+
+        .discipline-name {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.05em;
+        }
+
+        /* ROI Cards */
+        .roi-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .roi-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .roi-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .roi-card h4 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+
+        .roi-card p {
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        /* SEAM Framework Table */
+        .seam-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .seam-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1em;
+        }
+
+        .seam-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .seam-table tr:hover {
+            background: #f8f9ff;
+        }
+
+        .seam-stage {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 900px) {
+            .circular-container {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 1;
+            }
+
+            .process-step {
+                width: 100px;
+                height: 100px;
+                padding: 10px;
+            }
+
+            .seam-core {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧭 AI-Enabled Sales Process Framework</h1>
+        <p class="subtitle">Structure → Enable → Accelerate → Measure</p>
+
+        <!-- SEAM Framework Table -->
+        <div class="section">
+            <h2>SEAM Framework Overview</h2>
+            <table class="seam-table">
+                <thead>
+                    <tr>
+                        <th>SEAM Stage</th>
+                        <th>Focus</th>
+                        <th>Core Actions</th>
+                        <th>Key AI Contribution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="seam-stage">Structure</td>
+                        <td>Establish consistent sales disciplines</td>
+                        <td>Define 8–10 daily/monthly management touchpoints</td>
+                        <td>Sets data foundation for AI visibility</td>
+                    </tr>
+                    <tr>
+                        <td class="seam-stage">Enable</td>
+                        <td>Embed automation + analytics</td>
+                        <td>Deploy AI tools for transcription, dashboards, funnel alerts</td>
+                        <td>Frees reps from admin work</td>
+                    </tr>
+                    <tr>
+                        <td class="seam-stage">Accelerate</td>
+                        <td>Coach and act on insights</td>
+                        <td>AI-driven summaries, performance reviews</td>
+                        <td>Turns managers into data-driven coaches</td>
+                    </tr>
+                    <tr>
+                        <td class="seam-stage">Measure</td>
+                        <td>Optimize performance and accountability</td>
+                        <td>Real-time KPI dashboards, predictive scoring</td>
+                        <td>Enables continuous improvement and forecasting</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Circular Diagram -->
+        <div class="section">
+            <h2>🔄 AI-Enabled Sales Cycle: 10 Core Disciplines</h2>
+            <div class="circular-container">
+                <div class="seam-core">
+                    <h3>SEAM</h3>
+                    <div class="seam-letters">
+                        <strong>S</strong>tructure<br>
+                        <strong>E</strong>nable<br>
+                        <strong>A</strong>ccelerate<br>
+                        <strong>M</strong>easure
+                    </div>
+                </div>
+
+                <div class="process-step step-1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Call Reports</div>
+                </div>
+
+                <div class="process-step step-2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Calendar Planning</div>
+                </div>
+
+                <div class="process-step step-3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Sales Funnel Management</div>
+                </div>
+
+                <div class="process-step step-4">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Top 5 Prospects</div>
+                </div>
+
+                <div class="process-step step-5">
+                    <div class="step-number">5</div>
+                    <div class="step-title">Sales Dashboard</div>
+                </div>
+
+                <div class="process-step step-6">
+                    <div class="step-number">6</div>
+                    <div class="step-title">Results Confirmation</div>
+                </div>
+
+                <div class="process-step step-7">
+                    <div class="step-number">7</div>
+                    <div class="step-title">Customer 360° Files</div>
+                </div>
+
+                <div class="process-step step-8">
+                    <div class="step-number">8</div>
+                    <div class="step-title">Looking Forward / Back</div>
+                </div>
+
+                <div class="process-step step-9">
+                    <div class="step-number">9</div>
+                    <div class="step-title">Travel Days & Coaching</div>
+                </div>
+
+                <div class="process-step step-10">
+                    <div class="step-number">10</div>
+                    <div class="step-title">Monthly Performance</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="section">
+            <h2>⚖️ Old Way vs. AI-Enabled Way</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Sales Discipline</th>
+                        <th>Manual Process</th>
+                        <th>AI-Enabled Process</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="discipline-name">1. Call Reports</td>
+                        <td class="old-way">Reps type notes, managers review text</td>
+                        <td class="ai-way">Calls transcribed → key moments flagged → summary generated</td>
+                    </tr>
+                    <tr>
+                        <td class="discipline-name">2. Calendar Planning</td>
+                        <td class="old-way">Scheduling and routing done by intuition</td>
+                        <td class="ai-way">AI suggests optimal routes and visit priorities</td>
+                    </tr>
+                    <tr>
+                        <td class="discipline-name">3. Sales Funnel Management</td>
+                        <td class="old-way">Gut-feel forecasts and subjective deal updates</td>
+                        <td class="ai-way">Auto-updates based on engagement; predicts stall risk</td>
+                    </tr>
+                    <tr>
+                        <td class="discipline-name">4. Top 5 Prospects</td>
+                        <td class="old-way">Reps pick prospects based on instinct</td>
+                        <td class="ai-way">System ranks prospects by probability and urgency</td>
+                    </tr>
+                    <tr>
+                        <td class="discipline-name">5. Sales Dashboard</td>
+                        <td class="old-way">Lagging indicators only, reviewed monthly</td>
+                        <td class="ai-way">Real-time metrics with root cause analysis</td>
+                    </tr>
+                    <tr>
+                        <td class="discipline-name">6. Results Confirmation</td>
+                        <td class="old-way">Verbal reviews of performance</td>
+                        <td class="ai-way">Automatically attributes wins/losses to behaviors</td>
+                    </tr>
+                    <tr>
+                        <td class="discipline-name">7. Customer 360° Files</td>
+                        <td class="old-way">Data scattered across systems</td>
+                        <td class="ai-way">Unified, auto-compiled account view with wallet share</td>
+                    </tr>
+                    <tr>
+                        <td class="discipline-name">8. Looking Forward / Back</td>
+                        <td class="old-way">Narrative summaries and goals</td>
+                        <td class="ai-way">Pattern recognition → goal recommendations</td>
+                    </tr>
+                    <tr>
+                        <td class="discipline-name">9. Travel Days & Coaching</td>
+                        <td class="old-way">Feedback based on memory</td>
+                        <td class="ai-way">Coaching guided by AI-identified skill gaps</td>
+                    </tr>
+                    <tr>
+                        <td class="discipline-name">10. Monthly Performance</td>
+                        <td class="old-way">Reactive and lagging</td>
+                        <td class="ai-way">Predictive assessments with alerts</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Implementation Roadmap -->
+        <div class="section">
+            <h2>🚀 4-Phase Implementation Roadmap</h2>
+            <div class="pyramid-container">
+                <div class="pyramid-level level-4">
+                    <span class="duration">270–365 days</span>
+                    <h4>Phase 4: Optimize</h4>
+                    <p><strong>Focus:</strong> Predictive coaching, proactive alerts<br>
+                    <strong>Output:</strong> Fully AI-enabled system with continuous optimization</p>
+                </div>
+
+                <div class="pyramid-level level-3">
+                    <span class="duration">180–270 days</span>
+                    <h4>Phase 3: Augment</h4>
+                    <p><strong>Focus:</strong> Introduce AI agents for prep and recap<br>
+                    <strong>Output:</strong> Intelligent coaching and automated insights</p>
+                </div>
+
+                <div class="pyramid-level level-2">
+                    <span class="duration">90–180 days</span>
+                    <h4>Phase 2: Automate</h4>
+                    <p><strong>Focus:</strong> Add AI summaries and call recommendations<br>
+                    <strong>Output:</strong> Time savings and enhanced visibility</p>
+                </div>
+
+                <div class="pyramid-level level-1">
+                    <span class="duration">0–90 days</span>
+                    <h4>Phase 1: Simplify</h4>
+                    <p><strong>Focus:</strong> Create structured reviews and dashboards<br>
+                    <strong>Output:</strong> Foundational data and discipline</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROI Snapshot -->
+        <div class="section">
+            <h2>💰 ROI Snapshot: Key Benefits</h2>
+            <div class="roi-container">
+                <div class="roi-card">
+                    <h4>Manager Productivity</h4>
+                    <p>Reduce administrative time by 40-60% through automated call transcription, summaries, and performance tracking</p>
+                </div>
+
+                <div class="roi-card">
+                    <h4>Rep Retention</h4>
+                    <p>Increase retention by 25-30% with data-driven coaching, clear expectations, and reduced administrative burden</p>
+                </div>
+
+                <div class="roi-card">
+                    <h4>Sales Velocity</h4>
+                    <p>Improve deal velocity by 15-20% through predictive analytics, priority ranking, and proactive risk alerts</p>
+                </div>
+
+                <div class="roi-card">
+                    <h4>Forecast Accuracy</h4>
+                    <p>Boost forecast accuracy by 30-40% with real-time pipeline data and AI-powered probability scoring</p>
+                </div>
+
+                <div class="roi-card">
+                    <h4>Onboarding Speed</h4>
+                    <p>Reduce ramp time by 35-45% through AI-guided coaching, best practice identification, and automated feedback</p>
+                </div>
+
+                <div class="roi-card">
+                    <h4>Win Rate</h4>
+                    <p>Increase win rate by 10-15% through behavior attribution, pattern recognition, and strategic account insights</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 60px; color: #999; font-size: 0.9em;">
+            <p>AI-Enabled Sales Process Framework | Built on SEAM Methodology</p>
+        </div>
+    </div>
+
+    <script>
+        // Add hover effects and interactivity
+        const steps = document.querySelectorAll('.process-step');
+        const descriptions = {
+            1: 'Captures data accurately through AI transcription and key moment flagging',
+            2: 'Optimizes time efficiency with AI-suggested routes and priorities',
+            3: 'Enables proactive deal management with engagement-based predictions',
+            4: 'Focuses effort on highest-return prospects with AI ranking',
+            5: 'Allows daily course correction with real-time metrics',
+            6: 'Creates behavior-based accountability through automated attribution',
+            7: 'Supports strategic planning with unified account views',
+            8: 'Enables data-driven planning through pattern recognition',
+            9: 'Increases coaching impact with AI-identified skill gaps',
+            10: 'Enables early intervention with predictive assessments'
+        };
+
+        steps.forEach(step => {
+            step.addEventListener('click', function() {
+                const stepNum = this.querySelector('.step-number').textContent;
+                const stepTitle = this.querySelector('.step-title').textContent;
+                alert(`${stepTitle}\n\n${descriptions[stepNum]}`);
+            });
+        });
+    </script>
+</body>
+</html>
