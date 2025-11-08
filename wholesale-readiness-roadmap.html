@@ -1,0 +1,2146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Wholesale Readiness Roadmap</title>
+  <style>
+    /*
+     * CHANGELOG
+     * v1.0.0 - 2025-01-08
+     * - Initial implementation with full feature set
+     * - 26 initiatives across 4 phases (Start, Pilot, Stabilize, Expand)
+     * - Dynamic readiness scoring with 4 pillars
+     * - Capacity-aware caps based on size, change capability, budget, urgency
+     * - Budget guardrails with per-phase spending caps
+     * - Dependency resolution with auto-add
+     * - Priority-based ranking with 6 business priority dimensions
+     * - ROI modeling with baseline-driven formulas
+     * - Comprehensive audit trail
+     * - Print-to-PDF export support
+     */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.2em;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    header p {
+      font-size: 1.1em;
+      opacity: 0.95;
+      margin-bottom: 15px;
+    }
+
+    .header-stats {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .stat-box {
+      background: rgba(255,255,255,0.15);
+      padding: 15px 25px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-box .number {
+      font-size: 2em;
+      font-weight: 700;
+      display: block;
+    }
+
+    .stat-box .label {
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+
+    .tabs {
+      display: flex;
+      background: #f5f5f5;
+      border-bottom: 2px solid #ddd;
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 15px 25px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-size: 1em;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      background: rgba(102, 126, 234, 0.1);
+      color: #667eea;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      background: white;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 30px;
+      animation: fadeIn 0.3s;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+      padding: 25px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+
+    .form-section h3 {
+      margin-bottom: 20px;
+      color: #667eea;
+      font-size: 1.3em;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #555;
+      font-size: 0.95em;
+    }
+
+    .form-group .helper-text {
+      font-size: 0.85em;
+      color: #888;
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 10px 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-group input.error {
+      border-color: #e74c3c;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      font-size: 0.85em;
+      margin-top: 4px;
+    }
+
+    .radio-group,
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .radio-option,
+    .checkbox-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .radio-option input,
+    .checkbox-option input {
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f5f5f5;
+      color: #333;
+      border: 2px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+      background: #e9e9e9;
+    }
+
+    .readiness-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .readiness-score {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .readiness-score .score {
+      font-size: 4em;
+      font-weight: 700;
+      display: block;
+      line-height: 1;
+    }
+
+    .readiness-score .tier {
+      font-size: 1.5em;
+      font-weight: 600;
+      margin-top: 10px;
+      display: block;
+      opacity: 0.95;
+    }
+
+    .readiness-score .subtitle {
+      font-size: 1em;
+      opacity: 0.9;
+      margin-top: 5px;
+    }
+
+    .readiness-components {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .component {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 15px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    .component .name {
+      font-size: 0.9em;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+
+    .component .score {
+      font-size: 2em;
+      font-weight: 700;
+    }
+
+    .component .weight {
+      font-size: 0.85em;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+
+    .phase-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .phase-column {
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 20px;
+      border-top: 4px solid #667eea;
+    }
+
+    .phase-column h3 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .phase-column .phase-meta {
+      font-size: 0.75em;
+      color: #888;
+      font-weight: normal;
+    }
+
+    .initiative-card {
+      background: white;
+      padding: 18px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .initiative-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .initiative-card .name {
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 1.05em;
+    }
+
+    .initiative-card .meta {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      font-size: 0.9em;
+      color: #666;
+    }
+
+    .initiative-card .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .initiative-card .meta-item strong {
+      color: #333;
+    }
+
+    .initiative-card .kpis {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+    }
+
+    .initiative-card .kpi {
+      font-size: 0.9em;
+      color: #555;
+      margin-bottom: 5px;
+    }
+
+    .initiative-card .kpi strong {
+      color: #667eea;
+    }
+
+    .initiative-card .badges {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .badge-dependency {
+      background: #ffeaa7;
+      color: #d63031;
+    }
+
+    .badge-priority {
+      background: #74b9ff;
+      color: #0984e3;
+    }
+
+    .badge-budget {
+      background: #fd79a8;
+      color: #e84393;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .summary-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .summary-card .value {
+      font-size: 2.5em;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .summary-card .label {
+      font-size: 1em;
+      opacity: 0.95;
+    }
+
+    .audit-panel {
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 25px;
+      border-left: 4px solid #667eea;
+    }
+
+    .audit-panel h3 {
+      color: #667eea;
+      margin-bottom: 20px;
+      font-size: 1.3em;
+    }
+
+    .audit-section {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .audit-section:last-child {
+      border-bottom: none;
+    }
+
+    .audit-section h4 {
+      color: #555;
+      margin-bottom: 12px;
+      font-size: 1.1em;
+    }
+
+    .audit-section pre {
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.9em;
+      line-height: 1.6;
+      color: #333;
+      border: 1px solid #e0e0e0;
+    }
+
+    .audit-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .audit-list li {
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      background: white;
+      border-radius: 4px;
+      border-left: 3px solid #667eea;
+      font-size: 0.95em;
+    }
+
+    .audit-list li strong {
+      color: #667eea;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #888;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: #999;
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .container {
+        box-shadow: none;
+        max-width: 100%;
+      }
+
+      .tabs {
+        display: none;
+      }
+
+      .tab-content {
+        display: block !important;
+        page-break-after: always;
+      }
+
+      .btn {
+        display: none;
+      }
+
+      .audit-panel {
+        display: block !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-stats {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .phase-container {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AI Wholesale Readiness Roadmap</h1>
+      <p>Intelligent planning for AI-enabled distribution transformation</p>
+      <div class="header-stats">
+        <div class="stat-box">
+          <span class="number" id="stat-initiatives">26</span>
+          <span class="label">AI Technologies</span>
+        </div>
+        <div class="stat-box">
+          <span class="number" id="stat-phases">4</span>
+          <span class="label">Phases</span>
+        </div>
+        <div class="stat-box">
+          <span class="number" id="stat-selected">0</span>
+          <span class="label">Selected</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="inputs">📋 Inputs</button>
+      <button class="tab" data-tab="readiness">📊 Readiness</button>
+      <button class="tab" data-tab="roadmap">🗺️ Roadmap</button>
+      <button class="tab" data-tab="summary">📈 Executive Summary</button>
+      <button class="tab" data-tab="audit">🔍 Audit</button>
+    </div>
+
+    <!-- INPUTS TAB -->
+    <div id="tab-inputs" class="tab-content active">
+      <form id="input-form">
+        <!-- Company Profile -->
+        <div class="form-section">
+          <h3>Company Profile</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="companyName">Company Name</label>
+              <input type="text" id="companyName" required>
+            </div>
+            <div class="form-group">
+              <label for="annualRevenue">Annual Revenue ($ Millions) *</label>
+              <input type="number" id="annualRevenue" min="1" step="0.1" required>
+              <span class="helper-text">Enter revenue in millions (e.g., 250 for $250M)</span>
+            </div>
+            <div class="form-group">
+              <label for="segment">Primary Segment</label>
+              <select id="segment">
+                <option value="Electrical">Electrical</option>
+                <option value="Industrial">Industrial</option>
+                <option value="HVAC">HVAC</option>
+                <option value="Plumbing">Plumbing</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="employees">Total Employees</label>
+              <input type="number" id="employees" min="1" step="1">
+            </div>
+            <div class="form-group">
+              <label for="locations">Number of Locations</label>
+              <input type="number" id="locations" min="1" step="1">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="salesFTEs">Sales FTEs (optional)</label>
+              <input type="number" id="salesFTEs" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label for="warehouseFTEs">Warehouse FTEs (optional)</label>
+              <input type="number" id="warehouseFTEs" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label for="adminFTEs">Admin FTEs (optional)</label>
+              <input type="number" id="adminFTEs" min="0" step="1">
+            </div>
+          </div>
+        </div>
+
+        <!-- Technology & Data -->
+        <div class="form-section">
+          <h3>Technology & Data</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="erp">ERP System</label>
+              <select id="erp">
+                <option value="Epicor">Epicor</option>
+                <option value="Infor">Infor</option>
+                <option value="Oracle">Oracle</option>
+                <option value="SAP">SAP</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="cloudAdoption">Cloud Adoption</label>
+              <div class="checkbox-option">
+                <input type="checkbox" id="cloudAdoption">
+                <label for="cloudAdoption">We use cloud-based systems</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Data Quality</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="dataQuality" value="poor"> Poor
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="dataQuality" value="fair" checked> Fair
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="dataQuality" value="good"> Good
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="dataQuality" value="excellent"> Excellent
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Analytics Maturity</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="analytics" value="none"> None
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="analytics" value="descriptive" checked> Descriptive
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="analytics" value="diagnostic"> Diagnostic
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="analytics" value="predictive"> Predictive
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="analytics" value="prescriptive"> Prescriptive
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Integration Level</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="integration" value="isolated"> Isolated
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="integration" value="partial" checked> Partial
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="integration" value="integrated"> Integrated
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="integration" value="unified"> Unified
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Current AI Usage</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="aiUsage" value="none" checked> None
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="aiUsage" value="pilots"> Pilots
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="aiUsage" value="production"> Production
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Priorities -->
+        <div class="form-section">
+          <h3>Business Priorities (select all that apply)</h3>
+          <div class="checkbox-group">
+            <label class="checkbox-option">
+              <input type="checkbox" name="priority" value="cost"> Cost Reduction
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" name="priority" value="revenue"> Revenue Growth
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" name="priority" value="customer_experience"> Customer Experience
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" name="priority" value="efficiency"> Operational Efficiency
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" name="priority" value="inventory"> Inventory Optimization
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" name="priority" value="talent"> Talent & Skills
+            </label>
+          </div>
+        </div>
+
+        <!-- Organization & Resources -->
+        <div class="form-section">
+          <h3>Organization & Resources</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Leadership Support</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="leadership" value="low"> Low
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="leadership" value="medium" checked> Medium
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="leadership" value="high"> High
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Change Capability</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="changeCapability" value="low"> Low
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="changeCapability" value="medium" checked> Medium
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="changeCapability" value="high"> High
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Technical Skills</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="techSkills" value="low"> Low
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="techSkills" value="medium" checked> Medium
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="techSkills" value="high"> High
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Budget Band</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="budgetBand" value="low"> Low ($250K/year)
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="budgetBand" value="medium" checked> Medium ($750K/year)
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="budgetBand" value="high"> High ($2M/year)
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Urgency</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="urgency" value="fast"> Fast (≤6 months)
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="urgency" value="normal" checked> Normal
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Operational Baselines -->
+        <div class="form-section">
+          <h3>Operational Baselines (optional, used for ROI calculations)</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="hourlyBurdenRate">Hourly Burden Rate ($/hr)</label>
+              <input type="number" id="hourlyBurdenRate" value="40" min="0" step="0.01">
+              <span class="helper-text">Default: $40/hr</span>
+            </div>
+            <div class="form-group">
+              <label for="annualOrders">Annual Orders</label>
+              <input type="number" id="annualOrders" value="250000" min="0" step="1">
+              <span class="helper-text">Default: 250,000</span>
+            </div>
+            <div class="form-group">
+              <label for="linesPerOrder">Lines per Order</label>
+              <input type="number" id="linesPerOrder" value="3.0" min="0" step="0.1">
+              <span class="helper-text">Default: 3.0</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="warehouseHours">Annual Warehouse Hours</label>
+              <input type="number" id="warehouseHours" value="80000" min="0" step="1">
+              <span class="helper-text">Default: 80,000</span>
+            </div>
+            <div class="form-group">
+              <label for="serviceContactsPerMonth">Service Contacts per Month</label>
+              <input type="number" id="serviceContactsPerMonth" value="12000" min="0" step="1">
+              <span class="helper-text">Default: 12,000</span>
+            </div>
+            <div class="form-group">
+              <label for="avgHandleTime">Average Handle Time (minutes)</label>
+              <input type="number" id="avgHandleTime" value="8" min="0" step="0.1">
+              <span class="helper-text">Default: 8 min</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="grossMarginPct">Gross Margin (%)</label>
+              <input type="number" id="grossMarginPct" value="28" min="0" max="100" step="0.1">
+              <span class="helper-text">Default: 28%</span>
+            </div>
+            <div class="form-group">
+              <label for="avgInventory">Average Inventory ($)</label>
+              <input type="number" id="avgInventory" value="30000000" min="0" step="1">
+              <span class="helper-text">Default: $30M</span>
+            </div>
+            <div class="form-group">
+              <label for="inventoryTurns">Inventory Turns</label>
+              <input type="number" id="inventoryTurns" value="4.5" min="0" step="0.1">
+              <span class="helper-text">Default: 4.5</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn btn-primary">Generate Roadmap</button>
+          <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- READINESS TAB -->
+    <div id="tab-readiness" class="tab-content">
+      <div id="readiness-output"></div>
+    </div>
+
+    <!-- ROADMAP TAB -->
+    <div id="tab-roadmap" class="tab-content">
+      <div id="roadmap-output"></div>
+    </div>
+
+    <!-- SUMMARY TAB -->
+    <div id="tab-summary" class="tab-content">
+      <div id="summary-output"></div>
+    </div>
+
+    <!-- AUDIT TAB -->
+    <div id="tab-audit" class="tab-content">
+      <div id="audit-output"></div>
+    </div>
+  </div>
+
+  <script>
+    // ===== CONSTANTS =====
+    const PHASES = ["Start", "Pilot", "Stabilize", "Expand"];
+
+    const PHASE_BUDGET_WEIGHTS = {
+      "Start": 0.25,
+      "Pilot": 0.35,
+      "Stabilize": 0.25,
+      "Expand": 0.15
+    };
+
+    const BUDGET_BANDS = {
+      low: 250000,
+      medium: 750000,
+      high: 2000000
+    };
+
+    const SIZE_CAPACITY = [
+      { maxM: 50, cap: 1 },
+      { maxM: 250, cap: 2 },
+      { maxM: 1000, cap: 3 },
+      { maxM: Infinity, cap: 4 }
+    ];
+
+    const CHANGE_CAP_BOOST = { low: -1, medium: 0, high: 1 };
+    const BUDGET_CAP_BOOST = { low: -1, medium: 0, high: 1 };
+    const URGENCY_BOOST = { fast: 1, normal: 0 };
+
+    const PRIORITY_WEIGHTS = {
+      cost: 0.10,
+      revenue: 0.15,
+      customer_experience: 0.12,
+      efficiency: 0.10,
+      inventory: 0.12,
+      talent: 0.08
+    };
+
+    // Ordinal mappings
+    const DATA_QUALITY_MAP = { poor: 0, fair: 1, good: 2, excellent: 3 };
+    const ANALYTICS_MAP = { none: 0, descriptive: 1, diagnostic: 2, predictive: 3, prescriptive: 4 };
+    const INTEGRATION_MAP = { isolated: 0, partial: 1, integrated: 2, unified: 3 };
+    const AI_USAGE_MAP = { none: 0, pilots: 1, production: 2 };
+    const LEVEL_MAP = { low: 0, medium: 1, high: 2 };
+
+    // Initiative catalog
+    const INITIATIVES = [
+      // Start
+      {
+        initiativeId: "pim_sales",
+        name: "Product Information Management (Sales)",
+        phase: "Start",
+        requirements: { dataQuality: "fair", analytics: "descriptive", integration: "partial" },
+        dependsOn: [],
+        industryFit: 1.0,
+        priorityBase: 2,
+        investmentRangeK: [80, 180],
+        durationMonths: 3,
+        benefitModel: {
+          type: "mixed",
+          formulas: [
+            { metric: "labor_hours_saved", calc: "(annual_orders * 0.02)" },
+            { metric: "labor_savings$", calc: "labor_hours_saved * hourly_burden_rate" },
+            { metric: "revenue_lift$", calc: "annual_revenue * 1e6 * gross_margin_pct * 0.001" }
+          ]
+        },
+        kpis: [{ name: "Quote Accuracy +%", target: 15 }, { name: "Product Data Completeness +%", target: 25 }]
+      },
+      {
+        initiativeId: "pim_backoffice",
+        name: "Product Information Management (Back Office)",
+        phase: "Start",
+        requirements: { dataQuality: "fair", analytics: "descriptive", integration: "partial" },
+        dependsOn: [],
+        industryFit: 1.0,
+        priorityBase: 3,
+        investmentRangeK: [120, 250],
+        durationMonths: 4,
+        benefitModel: {
+          type: "labor",
+          formulas: [
+            { metric: "labor_hours_saved", calc: "(lines_per_order * annual_orders * 0.005)" },
+            { metric: "labor_savings$", calc: "labor_hours_saved * hourly_burden_rate" }
+          ]
+        },
+        kpis: [{ name: "Item Master Errors -%", target: 30 }]
+      },
+      {
+        initiativeId: "quote_automation_sales",
+        name: "Quote Automation (Sales)",
+        phase: "Start",
+        requirements: { dataQuality: "fair", analytics: "descriptive", integration: "partial" },
+        dependsOn: ["pim_sales"],
+        industryFit: 1.0,
+        priorityBase: 2,
+        investmentRangeK: [60, 150],
+        durationMonths: 3,
+        benefitModel: {
+          type: "labor",
+          formulas: [
+            { metric: "labor_hours_saved", calc: "(annual_orders * 0.01)" },
+            { metric: "labor_savings$", calc: "labor_hours_saved * hourly_burden_rate" }
+          ]
+        },
+        kpis: [{ name: "Quote Cycle Time -%", target: 20 }]
+      },
+      {
+        initiativeId: "quote_automation_service",
+        name: "Quote Automation (Service)",
+        phase: "Start",
+        requirements: { dataQuality: "fair", analytics: "descriptive", integration: "partial" },
+        dependsOn: ["pim_sales"],
+        industryFit: 1.0,
+        priorityBase: 2,
+        investmentRangeK: [60, 150],
+        durationMonths: 3,
+        benefitModel: {
+          type: "labor",
+          formulas: [
+            { metric: "labor_hours_saved", calc: "(service_contacts_per_month * average_handle_time_min/60 * 0.10 * 12)" },
+            { metric: "labor_savings$", calc: "labor_hours_saved * hourly_burden_rate" }
+          ]
+        },
+        kpis: [{ name: "First Response Time -%", target: 25 }]
+      },
+      {
+        initiativeId: "automated_arap",
+        name: "Automated AR/AP",
+        phase: "Start",
+        requirements: { dataQuality: "fair", analytics: "descriptive", integration: "partial" },
+        dependsOn: [],
+        industryFit: 1.0,
+        priorityBase: 2,
+        investmentRangeK: [100, 220],
+        durationMonths: 4,
+        benefitModel: {
+          type: "labor",
+          formulas: [
+            { metric: "labor_hours_saved", calc: "(annual_orders * 0.005)" },
+            { metric: "labor_savings$", calc: "labor_hours_saved * hourly_burden_rate" }
+          ]
+        },
+        kpis: [{ name: "Days Sales Outstanding -", target: 2 }]
+      },
+      {
+        initiativeId: "customer_service_automation",
+        name: "Customer Service Automation",
+        phase: "Start",
+        requirements: { dataQuality: "fair", analytics: "descriptive", integration: "partial" },
+        dependsOn: [],
+        industryFit: 1.0,
+        priorityBase: 2,
+        investmentRangeK: [80, 180],
+        durationMonths: 3,
+        benefitModel: {
+          type: "labor",
+          formulas: [
+            { metric: "labor_hours_saved", calc: "(service_contacts_per_month * average_handle_time_min/60 * 0.15 * 12)" },
+            { metric: "labor_savings$", calc: "labor_hours_saved * hourly_burden_rate" }
+          ]
+        },
+        kpis: [{ name: "AHT -%", target: 15 }]
+      },
+      {
+        initiativeId: "data_governance",
+        name: "Data Governance Program",
+        phase: "Start",
+        requirements: { dataQuality: "poor", analytics: "none", integration: "isolated" },
+        dependsOn: [],
+        industryFit: 1.0,
+        priorityBase: 3,
+        investmentRangeK: [60, 120],
+        durationMonths: 3,
+        benefitModel: {
+          type: "mixed",
+          formulas: [
+            { metric: "quality_index_gain", calc: "0.10" },
+            { metric: "revenue_lift$", calc: "annual_revenue * 1e6 * gross_margin_pct * 0.0005" }
+          ]
+        },
+        kpis: [{ name: "Data Quality Index +pts", target: 10 }]
+      },
+      {
+        initiativeId: "ipaas_integration",
+        name: "Integration Platform (iPaaS)",
+        phase: "Start",
+        requirements: { dataQuality: "fair", analytics: "descriptive", integration: "partial" },
+        dependsOn: [],
+        industryFit: 1.0,
+        priorityBase: 3,
+        investmentRangeK: [120, 300],
+        durationMonths: 4,
+        benefitModel: { type: "labor", formulas: [{ metric: "labor_savings$", calc: "warehouse_hours * 0.02 * hourly_burden_rate" }] },
+        kpis: [{ name: "System Integration Coverage +%", target: 30 }]
+      },
+      {
+        initiativeId: "lakehouse_etl",
+        name: "Data Lakehouse & ETL",
+        phase: "Start",
+        requirements: { dataQuality: "fair", analytics: "descriptive", integration: "partial" },
+        dependsOn: ["data_governance", "ipaas_integration"],
+        industryFit: 1.0,
+        priorityBase: 3,
+        investmentRangeK: [180, 400],
+        durationMonths: 5,
+        benefitModel: { type: "labor", formulas: [{ metric: "labor_savings$", calc: "warehouse_hours * 0.03 * hourly_burden_rate" }] },
+        kpis: [{ name: "Analytics Data Freshness (hrs)", target: 24 }]
+      },
+      {
+        initiativeId: "master_data_stewardship",
+        name: "Master Data Stewardship",
+        phase: "Start",
+        requirements: { dataQuality: "fair", analytics: "descriptive", integration: "partial" },
+        dependsOn: ["data_governance"],
+        industryFit: 1.0,
+        priorityBase: 3,
+        investmentRangeK: [80, 160],
+        durationMonths: 3,
+        benefitModel: { type: "mixed", formulas: [{ metric: "revenue_lift$", calc: "annual_revenue * 1e6 * gross_margin_pct * 0.0008" }] },
+        kpis: [{ name: "Duplicate Records -%", target: 50 }]
+      },
+      {
+        initiativeId: "center_of_excellence",
+        name: "AI/Data Center of Excellence",
+        phase: "Start",
+        requirements: { dataQuality: "fair", analytics: "descriptive", integration: "partial" },
+        dependsOn: [],
+        industryFit: 1.0,
+        priorityBase: 2,
+        investmentRangeK: [40, 100],
+        durationMonths: 2,
+        benefitModel: { type: "labor", formulas: [{ metric: "labor_savings$", calc: "warehouse_hours * 0.01 * hourly_burden_rate" }] },
+        kpis: [{ name: "Training Completion Rate %", target: 90 }]
+      },
+      // Pilot
+      {
+        initiativeId: "pricing_optimization",
+        name: "Pricing Optimization (AI-assisted)",
+        phase: "Pilot",
+        requirements: { dataQuality: "good", analytics: "predictive", integration: "integrated" },
+        dependsOn: ["pim_backoffice", "lakehouse_etl"],
+        industryFit: 1.0,
+        priorityBase: 3,
+        investmentRangeK: [150, 400],
+        durationMonths: 4,
+        benefitModel: {
+          type: "mixed",
+          formulas: [
+            { metric: "gross_margin_lift$", calc: "annual_revenue * 1e6 * gross_margin_pct * 0.005" },
+            { metric: "labor_savings$", calc: "annual_orders * 0.25 * hourly_burden_rate" }
+          ]
+        },
+        kpis: [{ name: "Gross Margin +bps", target: 50 }]
+      },
+      {
+        initiativeId: "inventory_forecasting",
+        name: "Demand & Inventory Forecasting",
+        phase: "Pilot",
+        requirements: { dataQuality: "good", analytics: "predictive", integration: "integrated" },
+        dependsOn: ["pim_backoffice", "lakehouse_etl"],
+        industryFit: 1.0,
+        priorityBase: 3,
+        investmentRangeK: [120, 350],
+        durationMonths: 4,
+        benefitModel: {
+          type: "inventory",
+          formulas: [
+            { metric: "inventory_savings$", calc: "avg_inventory * 0.03" },
+            { metric: "working_capital_gain$", calc: "avg_inventory * 0.01" }
+          ]
+        },
+        kpis: [{ name: "Fill Rate +%", target: 2 }, { name: "Excess Stock -%", target: 10 }]
+      },
+      {
+        initiativeId: "route_optimization",
+        name: "Route Optimization",
+        phase: "Pilot",
+        requirements: { dataQuality: "good", analytics: "diagnostic", integration: "integrated" },
+        dependsOn: ["ipaas_integration"],
+        industryFit: 1.0,
+        priorityBase: 2,
+        investmentRangeK: [80, 200],
+        durationMonths: 3,
+        benefitModel: { type: "labor", formulas: [{ metric: "labor_savings$", calc: "warehouse_hours * 0.02 * hourly_burden_rate" }] },
+        kpis: [{ name: "Miles per Stop +%", target: 8 }]
+      },
+      {
+        initiativeId: "ai_ecommerce",
+        name: "AI e-Commerce Features",
+        phase: "Pilot",
+        requirements: { dataQuality: "good", analytics: "predictive", integration: "integrated" },
+        dependsOn: ["pim_sales", "ipaas_integration"],
+        industryFit: 1.0,
+        priorityBase: 2,
+        investmentRangeK: [120, 300],
+        durationMonths: 4,
+        benefitModel: { type: "revenue", formulas: [{ metric: "revenue_lift$", calc: "annual_revenue * 1e6 * 0.002" }] },
+        kpis: [{ name: "Digital Conversion +bps", target: 20 }]
+      },
+      {
+        initiativeId: "ai_crm_sales",
+        name: "AI-Assisted CRM (Sales)",
+        phase: "Pilot",
+        requirements: { dataQuality: "good", analytics: "diagnostic", integration: "integrated" },
+        dependsOn: ["master_data_stewardship", "ipaas_integration"],
+        industryFit: 1.0,
+        priorityBase: 2,
+        investmentRangeK: [100, 220],
+        durationMonths: 3,
+        benefitModel: { type: "revenue", formulas: [{ metric: "revenue_lift$", calc: "annual_revenue * 1e6 * 0.0015" }] },
+        kpis: [{ name: "Win Rate +%", target: 3 }]
+      },
+      {
+        initiativeId: "ai_crm_service",
+        name: "AI-Assisted CRM (Service)",
+        phase: "Pilot",
+        requirements: { dataQuality: "good", analytics: "diagnostic", integration: "integrated" },
+        dependsOn: ["master_data_stewardship", "ipaas_integration"],
+        industryFit: 1.0,
+        priorityBase: 2,
+        investmentRangeK: [100, 220],
+        durationMonths: 3,
+        benefitModel: { type: "labor", formulas: [{ metric: "labor_savings$", calc: "service_contacts_per_month * average_handle_time_min/60 * 0.12 * 12 * hourly_burden_rate" }] },
+        kpis: [{ name: "CSAT +pts", target: 5 }]
+      },
+      // Stabilize
+      {
+        initiativeId: "tms",
+        name: "Transportation Management System (broader)",
+        phase: "Stabilize",
+        requirements: { dataQuality: "good", analytics: "diagnostic", integration: "integrated" },
+        dependsOn: ["route_optimization", "ipaas_integration"],
+        industryFit: 1.0,
+        priorityBase: 2,
+        investmentRangeK: [150, 350],
+        durationMonths: 5,
+        benefitModel: { type: "labor", formulas: [{ metric: "labor_savings$", calc: "warehouse_hours * 0.03 * hourly_burden_rate" }] },
+        kpis: [{ name: "On-Time Delivery +%", target: 3 }]
+      },
+      {
+        initiativeId: "wms",
+        name: "Warehouse Management System",
+        phase: "Stabilize",
+        requirements: { dataQuality: "good", analytics: "diagnostic", integration: "integrated" },
+        dependsOn: ["lakehouse_etl"],
+        industryFit: 1.0,
+        priorityBase: 3,
+        investmentRangeK: [250, 700],
+        durationMonths: 6,
+        benefitModel: { type: "labor", formulas: [{ metric: "labor_savings$", calc: "warehouse_hours * 0.06 * hourly_burden_rate" }] },
+        kpis: [{ name: "Picking Accuracy +%", target: 15 }]
+      },
+      {
+        initiativeId: "mlops_governance",
+        name: "MLOps & Model Governance",
+        phase: "Stabilize",
+        requirements: { dataQuality: "good", analytics: "predictive", integration: "integrated" },
+        dependsOn: ["lakehouse_etl", "center_of_excellence"],
+        industryFit: 1.0,
+        priorityBase: 3,
+        investmentRangeK: [120, 240],
+        durationMonths: 4,
+        benefitModel: { type: "labor", formulas: [{ metric: "labor_savings$", calc: "warehouse_hours * 0.02 * hourly_burden_rate" }] },
+        kpis: [{ name: "Model Drift Incidents per Qtr", target: 0 }]
+      },
+      {
+        initiativeId: "advanced_analytics",
+        name: "Advanced Analytics Platform",
+        phase: "Stabilize",
+        requirements: { dataQuality: "excellent", analytics: "predictive", integration: "integrated" },
+        dependsOn: ["lakehouse_etl", "mlops_governance"],
+        industryFit: 1.0,
+        priorityBase: 3,
+        investmentRangeK: [300, 800],
+        durationMonths: 6,
+        benefitModel: { type: "mixed", formulas: [{ metric: "revenue_lift$", calc: "annual_revenue * 1e6 * 0.002" }] },
+        kpis: [{ name: "Self-Serve Dashboards #", target: 20 }]
+      },
+      // Expand
+      {
+        initiativeId: "warehouse_automation",
+        name: "Warehouse Automation (Sortation/AMRs)",
+        phase: "Expand",
+        requirements: { dataQuality: "excellent", analytics: "prescriptive", integration: "unified" },
+        dependsOn: ["wms", "ipaas_integration"],
+        industryFit: 1.0,
+        priorityBase: 2,
+        investmentRangeK: [800, 2000],
+        durationMonths: 9,
+        benefitModel: { type: "labor", formulas: [{ metric: "labor_savings$", calc: "warehouse_hours * 0.12 * hourly_burden_rate" }] },
+        kpis: [{ name: "Throughput +%", target: 20 }]
+      }
+    ];
+
+    // ===== STATE =====
+    let appState = {
+      inputs: null,
+      readiness: null,
+      roadmap: null,
+      audit: null
+    };
+
+    // ===== INITIALIZATION =====
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeTabs();
+      initializeForm();
+      updateHeaderStats();
+    });
+
+    function initializeTabs() {
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.dataset.tab;
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+          });
+          document.getElementById(`tab-${target}`).classList.add('active');
+        });
+      });
+    }
+
+    function initializeForm() {
+      const form = document.getElementById('input-form');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (validateForm()) {
+          generateRoadmap();
+        }
+      });
+
+      // Real-time validation
+      const annualRevenue = document.getElementById('annualRevenue');
+      annualRevenue.addEventListener('input', () => {
+        validateNumericInput(annualRevenue, 1, Infinity);
+      });
+    }
+
+    function validateNumericInput(input, min, max) {
+      const value = parseFloat(input.value);
+      const errorMsg = input.parentElement.querySelector('.error-message');
+
+      if (errorMsg) errorMsg.remove();
+
+      if (value < min || value > max || isNaN(value)) {
+        input.classList.add('error');
+        const error = document.createElement('span');
+        error.className = 'error-message';
+        error.textContent = `Value must be between ${min} and ${max}`;
+        input.parentElement.appendChild(error);
+        return false;
+      } else {
+        input.classList.remove('error');
+        return true;
+      }
+    }
+
+    function validateForm() {
+      let valid = true;
+      const annualRevenue = document.getElementById('annualRevenue');
+
+      if (!validateNumericInput(annualRevenue, 1, Infinity)) {
+        valid = false;
+      }
+
+      return valid;
+    }
+
+    function resetForm() {
+      document.getElementById('input-form').reset();
+      appState = { inputs: null, readiness: null, roadmap: null, audit: null };
+
+      document.getElementById('readiness-output').innerHTML = '<div class="empty-state"><h3>No data yet</h3><p>Fill out the inputs form and click "Generate Roadmap"</p></div>';
+      document.getElementById('roadmap-output').innerHTML = '<div class="empty-state"><h3>No roadmap generated</h3><p>Complete the inputs form first</p></div>';
+      document.getElementById('summary-output').innerHTML = '<div class="empty-state"><h3>No summary available</h3><p>Generate a roadmap first</p></div>';
+      document.getElementById('audit-output').innerHTML = '<div class="empty-state"><h3>No audit trail</h3><p>Generate a roadmap to see the audit trail</p></div>';
+
+      updateHeaderStats();
+    }
+
+    function updateHeaderStats() {
+      document.getElementById('stat-initiatives').textContent = INITIATIVES.length;
+      document.getElementById('stat-phases').textContent = PHASES.length;
+
+      if (appState.roadmap) {
+        const selectedCount = Object.values(appState.roadmap).flat().length;
+        document.getElementById('stat-selected').textContent = selectedCount;
+      } else {
+        document.getElementById('stat-selected').textContent = '0';
+      }
+    }
+
+    // ===== CORE LOGIC =====
+
+    function collectInputs() {
+      const priorities = Array.from(document.querySelectorAll('input[name="priority"]:checked')).map(el => el.value);
+
+      return {
+        companyName: document.getElementById('companyName').value,
+        annualRevenue: parseFloat(document.getElementById('annualRevenue').value),
+        segment: document.getElementById('segment').value,
+        employees: parseInt(document.getElementById('employees').value) || 0,
+        locations: parseInt(document.getElementById('locations').value) || 0,
+        salesFTEs: parseInt(document.getElementById('salesFTEs').value) || 0,
+        warehouseFTEs: parseInt(document.getElementById('warehouseFTEs').value) || 0,
+        adminFTEs: parseInt(document.getElementById('adminFTEs').value) || 0,
+        erp: document.getElementById('erp').value,
+        cloudAdoption: document.getElementById('cloudAdoption').checked,
+        dataQuality: document.querySelector('input[name="dataQuality"]:checked').value,
+        analytics: document.querySelector('input[name="analytics"]:checked').value,
+        integration: document.querySelector('input[name="integration"]:checked').value,
+        aiUsage: document.querySelector('input[name="aiUsage"]:checked').value,
+        priorities: priorities,
+        leadership: document.querySelector('input[name="leadership"]:checked').value,
+        changeCapability: document.querySelector('input[name="changeCapability"]:checked').value,
+        techSkills: document.querySelector('input[name="techSkills"]:checked').value,
+        budgetBand: document.querySelector('input[name="budgetBand"]:checked').value,
+        urgency: document.querySelector('input[name="urgency"]:checked').value,
+        hourlyBurdenRate: parseFloat(document.getElementById('hourlyBurdenRate').value),
+        annualOrders: parseFloat(document.getElementById('annualOrders').value),
+        linesPerOrder: parseFloat(document.getElementById('linesPerOrder').value),
+        warehouseHours: parseFloat(document.getElementById('warehouseHours').value),
+        serviceContactsPerMonth: parseFloat(document.getElementById('serviceContactsPerMonth').value),
+        avgHandleTime: parseFloat(document.getElementById('avgHandleTime').value),
+        grossMarginPct: parseFloat(document.getElementById('grossMarginPct').value) / 100,
+        avgInventory: parseFloat(document.getElementById('avgInventory').value),
+        inventoryTurns: parseFloat(document.getElementById('inventoryTurns').value)
+      };
+    }
+
+    function scoreReadiness(inputs) {
+      // Data pillar (30%)
+      const dataScore = (DATA_QUALITY_MAP[inputs.dataQuality] / 3) * 100;
+
+      // Technology pillar (30%) = 0.6*analytics + 0.4*AI
+      const analyticsScore = (ANALYTICS_MAP[inputs.analytics] / 4) * 100;
+      const aiScore = (AI_USAGE_MAP[inputs.aiUsage] / 2) * 100;
+      const techScore = 0.6 * analyticsScore + 0.4 * aiScore;
+
+      // Organization pillar (25%) = (leadership + change) / 2
+      const leadershipScore = (LEVEL_MAP[inputs.leadership] / 2) * 100;
+      const changeScore = (LEVEL_MAP[inputs.changeCapability] / 2) * 100;
+      const orgScore = (leadershipScore + changeScore) / 2;
+
+      // Resources pillar (15%) = (tech skills + budget) / 2
+      const skillsScore = (LEVEL_MAP[inputs.techSkills] / 2) * 100;
+      const budgetScore = (LEVEL_MAP[inputs.budgetBand] / 2) * 100;
+      const resourceScore = (skillsScore + budgetScore) / 2;
+
+      // Total weighted score
+      const totalScore = Math.round(
+        dataScore * 0.30 +
+        techScore * 0.30 +
+        orgScore * 0.25 +
+        resourceScore * 0.15
+      );
+
+      // Determine tier
+      let tier;
+      if (totalScore <= 49) tier = "Foundational";
+      else if (totalScore <= 74) tier = "Emerging";
+      else tier = "Advanced";
+
+      return {
+        totalScore,
+        tier,
+        components: {
+          data: { score: Math.round(dataScore), weight: 30 },
+          technology: { score: Math.round(techScore), weight: 30 },
+          organization: { score: Math.round(orgScore), weight: 25 },
+          resources: { score: Math.round(resourceScore), weight: 15 }
+        }
+      };
+    }
+
+    function passesRequirements(initiative, inputs) {
+      const req = initiative.requirements;
+      const userDataQuality = DATA_QUALITY_MAP[inputs.dataQuality];
+      const userAnalytics = ANALYTICS_MAP[inputs.analytics];
+      const userIntegration = INTEGRATION_MAP[inputs.integration];
+
+      return (
+        userDataQuality >= DATA_QUALITY_MAP[req.dataQuality] &&
+        userAnalytics >= ANALYTICS_MAP[req.analytics] &&
+        userIntegration >= INTEGRATION_MAP[req.integration]
+      );
+    }
+
+    function closeDependencies(selectedIds, allInitiatives) {
+      // Prevent circular dependencies and auto-add prerequisites
+      const added = [];
+      const selected = new Set(selectedIds);
+      let changed = true;
+      let iterations = 0;
+      const maxIterations = 100;
+
+      while (changed && iterations < maxIterations) {
+        changed = false;
+        iterations++;
+
+        for (const id of selected) {
+          const initiative = allInitiatives.find(i => i.initiativeId === id);
+          if (!initiative) continue;
+
+          for (const depId of initiative.dependsOn) {
+            if (!selected.has(depId)) {
+              selected.add(depId);
+              added.push(depId);
+              changed = true;
+            }
+          }
+        }
+      }
+
+      return { allIds: Array.from(selected), added };
+    }
+
+    function computePriorityScore(initiative, inputs) {
+      // Base weight from priorityBase (1-3) → 0.33, 0.67, 1.0
+      const baseWeight = initiative.priorityBase / 3;
+
+      // Priority boost: sum of selected priority weights
+      let priorityBoost = 0;
+      for (const priority of inputs.priorities) {
+        if (PRIORITY_WEIGHTS[priority]) {
+          priorityBoost += PRIORITY_WEIGHTS[priority];
+        }
+      }
+
+      // Final score
+      const score = baseWeight * initiative.industryFit * (1 + priorityBoost);
+
+      return { score, priorityBoost };
+    }
+
+    function calcParallelCapacity(inputs) {
+      // Find size cap
+      let sizeCap = 1;
+      for (const bracket of SIZE_CAPACITY) {
+        if (inputs.annualRevenue <= bracket.maxM) {
+          sizeCap = bracket.cap;
+          break;
+        }
+      }
+
+      // Apply boosts
+      const changBoost = CHANGE_CAP_BOOST[inputs.changeCapability] || 0;
+      const budgBoost = BUDGET_CAP_BOOST[inputs.budgetBand] || 0;
+      const urgBoost = inputs.urgency === 'fast' ? URGENCY_BOOST.fast : 0;
+
+      const capacity = sizeCap + changBoost + budgBoost + urgBoost;
+
+      // Clamp to [1, 5]
+      return Math.max(1, Math.min(5, capacity));
+    }
+
+    function evaluateBenefitFormula(formula, inputs) {
+      // Safe eval using inputs as context
+      const context = {
+        annual_revenue: inputs.annualRevenue,
+        hourly_burden_rate: inputs.hourlyBurdenRate,
+        annual_orders: inputs.annualOrders,
+        lines_per_order: inputs.linesPerOrder,
+        warehouse_hours: inputs.warehouseHours,
+        service_contacts_per_month: inputs.serviceContactsPerMonth,
+        average_handle_time_min: inputs.avgHandleTime,
+        gross_margin_pct: inputs.grossMarginPct,
+        avg_inventory: inputs.avgInventory,
+        inventory_turns: inputs.inventoryTurns
+      };
+
+      // Track intermediate calculations
+      let labor_hours_saved = 0;
+      let labor_savings = 0;
+      let revenue_lift = 0;
+      let gross_margin_lift = 0;
+      let inventory_savings = 0;
+      let working_capital_gain = 0;
+      let quality_index_gain = 0;
+
+      try {
+        const result = Function(...Object.keys(context), `"use strict"; return (${formula.calc});`)(...Object.values(context));
+
+        // Store intermediate value
+        if (formula.metric === 'labor_hours_saved') {
+          labor_hours_saved = result;
+        } else if (formula.metric === 'labor_savings$') {
+          labor_savings = result;
+        } else if (formula.metric === 'revenue_lift$') {
+          revenue_lift = result;
+        } else if (formula.metric === 'gross_margin_lift$') {
+          gross_margin_lift = result;
+        } else if (formula.metric === 'inventory_savings$') {
+          inventory_savings = result;
+        } else if (formula.metric === 'working_capital_gain$') {
+          working_capital_gain = result;
+        } else if (formula.metric === 'quality_index_gain') {
+          quality_index_gain = result;
+        }
+
+        return result;
+      } catch (e) {
+        console.error('Formula evaluation error:', e, formula);
+        return 0;
+      }
+    }
+
+    function computeROI(initiative, inputs) {
+      const investment = (initiative.investmentRangeK[0] + initiative.investmentRangeK[1]) / 2 * 1000;
+
+      let annualBenefit = 0;
+      const benefitDetails = {};
+
+      // Evaluate each formula in the benefit model
+      for (const formula of initiative.benefitModel.formulas) {
+        const value = evaluateBenefitFormula(formula, inputs);
+        benefitDetails[formula.metric] = value;
+
+        // Sum up dollar benefits
+        if (formula.metric.endsWith('$')) {
+          annualBenefit += value;
+        }
+      }
+
+      // Calculate payback
+      const paybackMonths = annualBenefit > 0 ? (investment / annualBenefit) * 12 : 999;
+
+      // Industry-adjusted benefit
+      const adjustedBenefit = annualBenefit * initiative.industryFit;
+
+      return {
+        investment,
+        annualBenefit,
+        adjustedBenefit,
+        paybackMonths,
+        benefitDetails
+      };
+    }
+
+    function enforceBudget(phaseInitiatives, phase, inputs, capacity, auditLog) {
+      const phaseBudgetCap = BUDGET_BANDS[inputs.budgetBand] * PHASE_BUDGET_WEIGHTS[phase];
+
+      // Calculate current spend
+      let currentSpend = 0;
+      const initiativesCosts = phaseInitiatives.map(init => {
+        const cost = (init.investmentRangeK[0] + init.investmentRangeK[1]) / 2 * 1000;
+        currentSpend += cost;
+        return { initiative: init, cost };
+      });
+
+      auditLog.push({
+        phase,
+        budgetCap: phaseBudgetCap,
+        initialSpend: currentSpend,
+        initialCount: phaseInitiatives.length
+      });
+
+      // If over budget, drop lowest benefit/cost items
+      const dropped = [];
+      if (currentSpend > phaseBudgetCap) {
+        // Calculate benefit/cost ratio for each
+        initiativesCosts.forEach(item => {
+          const roi = computeROI(item.initiative, inputs);
+          item.benefitCostRatio = roi.annualBenefit / item.cost;
+        });
+
+        // Sort by benefit/cost ratio ascending (worst first)
+        initiativesCosts.sort((a, b) => a.benefitCostRatio - b.benefitCostRatio);
+
+        // Drop items until under budget
+        while (currentSpend > phaseBudgetCap && initiativesCosts.length > 0) {
+          const removed = initiativesCosts.shift();
+          currentSpend -= removed.cost;
+          dropped.push(removed.initiative.initiativeId);
+        }
+      }
+
+      auditLog[auditLog.length - 1].finalSpend = currentSpend;
+      auditLog[auditLog.length - 1].finalCount = initiativesCosts.length;
+      auditLog[auditLog.length - 1].dropped = dropped;
+
+      return initiativesCosts.map(item => item.initiative);
+    }
+
+    function generateRoadmap() {
+      const inputs = collectInputs();
+      appState.inputs = inputs;
+
+      // Step 1: Readiness scoring
+      const readiness = scoreReadiness(inputs);
+      appState.readiness = readiness;
+
+      // Step 2: Gate initiatives
+      const gatedInitiatives = INITIATIVES.filter(init => passesRequirements(init, inputs));
+
+      // Step 3: Calculate priority scores and enrich initiatives
+      const enrichedInitiatives = gatedInitiatives.map(init => {
+        const { score, priorityBoost } = computePriorityScore(init, inputs);
+        const roi = computeROI(init, inputs);
+        return { ...init, priorityScore: score, priorityBoost, roi };
+      });
+
+      // Step 4: Calculate parallel capacity
+      const capacity = calcParallelCapacity(inputs);
+
+      // Step 5: Group by phase and select top N per phase
+      const roadmapByPhase = {};
+      const auditLog = {
+        inputs: inputs,
+        readiness: readiness,
+        capacity: capacity,
+        gatingResults: [],
+        dependencyAdded: [],
+        budgetEnforcement: [],
+        selections: {}
+      };
+
+      // Record gating
+      INITIATIVES.forEach(init => {
+        const passed = passesRequirements(init, inputs);
+        auditLog.gatingResults.push({
+          initiativeId: init.initiativeId,
+          name: init.name,
+          passed,
+          requirements: init.requirements
+        });
+      });
+
+      PHASES.forEach(phase => {
+        const phaseInitiatives = enrichedInitiatives.filter(init => init.phase === phase);
+
+        // Sort by priority score descending
+        phaseInitiatives.sort((a, b) => b.priorityScore - a.priorityScore);
+
+        // Take top N based on capacity
+        let selected = phaseInitiatives.slice(0, capacity);
+
+        // Resolve dependencies
+        const selectedIds = selected.map(init => init.initiativeId);
+        const { allIds, added } = closeDependencies(selectedIds, enrichedInitiatives);
+
+        // Add dependency-added initiatives
+        added.forEach(addedId => {
+          auditLog.dependencyAdded.push({
+            phase,
+            initiativeId: addedId,
+            addedFor: selectedIds
+          });
+        });
+
+        // Get full list including dependencies
+        selected = enrichedInitiatives.filter(init => allIds.includes(init.initiativeId) && init.phase === phase);
+
+        // Enforce budget
+        const budgetLog = [];
+        selected = enforceBudget(selected, phase, inputs, capacity, budgetLog);
+        auditLog.budgetEnforcement.push(...budgetLog);
+
+        roadmapByPhase[phase] = selected;
+        auditLog.selections[phase] = selected.map(init => ({
+          initiativeId: init.initiativeId,
+          name: init.name,
+          priorityScore: init.priorityScore,
+          priorityBoost: init.priorityBoost,
+          roi: init.roi
+        }));
+      });
+
+      appState.roadmap = roadmapByPhase;
+      appState.audit = auditLog;
+
+      // Render outputs
+      renderReadiness(readiness);
+      renderRoadmap(roadmapByPhase, auditLog);
+      renderSummary(roadmapByPhase, inputs);
+      renderAudit(auditLog);
+
+      updateHeaderStats();
+
+      // Switch to readiness tab
+      document.querySelector('.tab[data-tab="readiness"]').click();
+    }
+
+    // ===== RENDERING =====
+
+    function renderReadiness(readiness) {
+      const output = document.getElementById('readiness-output');
+
+      const html = `
+        <div class="readiness-card">
+          <div class="readiness-score">
+            <span class="score">${readiness.totalScore}</span>
+            <span class="tier">${readiness.tier}</span>
+            <span class="subtitle">AI Readiness Score</span>
+          </div>
+          <div class="readiness-components">
+            <div class="component">
+              <div class="name">Data</div>
+              <div class="score">${readiness.components.data.score}</div>
+              <div class="weight">${readiness.components.data.weight}% weight</div>
+            </div>
+            <div class="component">
+              <div class="name">Technology</div>
+              <div class="score">${readiness.components.technology.score}</div>
+              <div class="weight">${readiness.components.technology.weight}% weight</div>
+            </div>
+            <div class="component">
+              <div class="name">Organization</div>
+              <div class="score">${readiness.components.organization.score}</div>
+              <div class="weight">${readiness.components.organization.weight}% weight</div>
+            </div>
+            <div class="component">
+              <div class="name">Resources</div>
+              <div class="score">${readiness.components.resources.score}</div>
+              <div class="weight">${readiness.components.resources.weight}% weight</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      output.innerHTML = html;
+    }
+
+    function renderRoadmap(roadmapByPhase, auditLog) {
+      const output = document.getElementById('roadmap-output');
+
+      let html = '<div class="phase-container">';
+
+      PHASES.forEach(phase => {
+        const initiatives = roadmapByPhase[phase] || [];
+        const phaseMeta = `${initiatives.length} initiatives`;
+
+        html += `
+          <div class="phase-column">
+            <h3>${phase} <span class="phase-meta">${phaseMeta}</span></h3>
+        `;
+
+        initiatives.forEach(init => {
+          const badges = [];
+
+          // Check if dependency-added
+          const isDep = auditLog.dependencyAdded.some(d => d.initiativeId === init.initiativeId);
+          if (isDep) {
+            badges.push('<span class="badge badge-dependency">Added (dependency)</span>');
+          }
+
+          // Check if priority boosted
+          if (init.priorityBoost > 0) {
+            const boostPct = Math.round(init.priorityBoost * 100);
+            badges.push(`<span class="badge badge-priority">Priority +${boostPct}%</span>`);
+          }
+
+          const kpisHtml = init.kpis.map(kpi => `
+            <div class="kpi"><strong>${kpi.name}:</strong> ${kpi.target}</div>
+          `).join('');
+
+          const midpointCost = Math.round((init.investmentRangeK[0] + init.investmentRangeK[1]) / 2);
+
+          html += `
+            <div class="initiative-card">
+              <div class="name">${init.name}</div>
+              <div class="meta">
+                <div class="meta-item"><strong>Duration:</strong> ${init.durationMonths}mo</div>
+                <div class="meta-item"><strong>Investment:</strong> $${midpointCost}K</div>
+              </div>
+              <div class="kpis">${kpisHtml}</div>
+              ${badges.length > 0 ? `<div class="badges">${badges.join('')}</div>` : ''}
+            </div>
+          `;
+        });
+
+        html += '</div>';
+      });
+
+      html += '</div>';
+
+      output.innerHTML = html;
+    }
+
+    function renderSummary(roadmapByPhase, inputs) {
+      const output = document.getElementById('summary-output');
+
+      // Calculate totals
+      let totalInvestment = 0;
+      let totalAnnualBenefit = 0;
+      let totalDuration = 0;
+      let initiativeCount = 0;
+
+      Object.values(roadmapByPhase).forEach(initiatives => {
+        initiatives.forEach(init => {
+          totalInvestment += init.roi.investment;
+          totalAnnualBenefit += init.roi.annualBenefit;
+          totalDuration = Math.max(totalDuration, init.durationMonths);
+          initiativeCount++;
+        });
+      });
+
+      const overallPayback = totalAnnualBenefit > 0 ? (totalInvestment / totalAnnualBenefit) * 12 : 999;
+
+      const html = `
+        <div class="summary-grid">
+          <div class="summary-card">
+            <span class="value">${initiativeCount}</span>
+            <span class="label">Total Initiatives</span>
+          </div>
+          <div class="summary-card">
+            <span class="value">$${formatNumber(Math.round(totalInvestment / 1000))}K</span>
+            <span class="label">Total Investment</span>
+          </div>
+          <div class="summary-card">
+            <span class="value">$${formatNumber(Math.round(totalAnnualBenefit / 1000))}K</span>
+            <span class="label">Annual Benefit</span>
+          </div>
+          <div class="summary-card">
+            <span class="value">${Math.round(overallPayback)}</span>
+            <span class="label">Payback (months)</span>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Key Risks & Considerations</h3>
+          <ul class="audit-list">
+            <li>Budget capacity: <strong>${inputs.budgetBand}</strong> band ($${formatNumber(BUDGET_BANDS[inputs.budgetBand])} annual)</li>
+            <li>Parallel execution capacity: <strong>${calcParallelCapacity(inputs)}</strong> initiatives per phase</li>
+            <li>Data quality baseline: <strong>${inputs.dataQuality}</strong> - may require additional governance investment</li>
+            <li>Change readiness: <strong>${inputs.changeCapability}</strong> - consider change management resources</li>
+          </ul>
+        </div>
+
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="window.print()">Export to PDF</button>
+        </div>
+      `;
+
+      output.innerHTML = html;
+    }
+
+    function renderAudit(auditLog) {
+      const output = document.getElementById('audit-output');
+
+      let html = '<div class="audit-panel">';
+      html += '<h3>Audit Trail: Decision Logic</h3>';
+
+      // 1. Inputs summary
+      html += '<div class="audit-section">';
+      html += '<h4>1. User Inputs Summary</h4>';
+      html += '<ul class="audit-list">';
+      html += `<li><strong>Company:</strong> ${auditLog.inputs.companyName}</li>`;
+      html += `<li><strong>Revenue:</strong> $${auditLog.inputs.annualRevenue}M</li>`;
+      html += `<li><strong>Segment:</strong> ${auditLog.inputs.segment}</li>`;
+      html += `<li><strong>Data Quality:</strong> ${auditLog.inputs.dataQuality}</li>`;
+      html += `<li><strong>Analytics Maturity:</strong> ${auditLog.inputs.analytics}</li>`;
+      html += `<li><strong>Integration Level:</strong> ${auditLog.inputs.integration}</li>`;
+      html += `<li><strong>Priorities:</strong> ${auditLog.inputs.priorities.join(', ') || 'None selected'}</li>`;
+      html += `<li><strong>Budget Band:</strong> ${auditLog.inputs.budgetBand} ($${formatNumber(BUDGET_BANDS[auditLog.inputs.budgetBand])})</li>`;
+      html += `<li><strong>Change Capability:</strong> ${auditLog.inputs.changeCapability}</li>`;
+      html += `<li><strong>Urgency:</strong> ${auditLog.inputs.urgency}</li>`;
+      html += '</ul>';
+      html += '</div>';
+
+      // 2. Readiness scoring
+      html += '<div class="audit-section">';
+      html += '<h4>2. Readiness Scoring</h4>';
+      html += '<pre>';
+      html += `Data pillar:         ${auditLog.readiness.components.data.score} (weight: ${auditLog.readiness.components.data.weight}%)\n`;
+      html += `Technology pillar:   ${auditLog.readiness.components.technology.score} (weight: ${auditLog.readiness.components.technology.weight}%)\n`;
+      html += `Organization pillar: ${auditLog.readiness.components.organization.score} (weight: ${auditLog.readiness.components.organization.weight}%)\n`;
+      html += `Resources pillar:    ${auditLog.readiness.components.resources.score} (weight: ${auditLog.readiness.components.resources.weight}%)\n\n`;
+      html += `Total Score: ${auditLog.readiness.totalScore} → Tier: ${auditLog.readiness.tier}`;
+      html += '</pre>';
+      html += '</div>';
+
+      // 3. Gating decisions
+      html += '<div class="audit-section">';
+      html += '<h4>3. Gating Decisions (Requirements Check)</h4>';
+      const passed = auditLog.gatingResults.filter(g => g.passed).length;
+      const failed = auditLog.gatingResults.filter(g => !g.passed).length;
+      html += `<p>Passed: <strong>${passed}</strong> | Failed: <strong>${failed}</strong></p>`;
+      html += '<ul class="audit-list">';
+      auditLog.gatingResults.slice(0, 10).forEach(g => {
+        const status = g.passed ? '✓ PASS' : '✗ FAIL';
+        html += `<li><strong>${status}</strong> - ${g.name} (requires: ${g.requirements.dataQuality}/${g.requirements.analytics}/${g.requirements.integration})</li>`;
+      });
+      if (auditLog.gatingResults.length > 10) {
+        html += `<li>... and ${auditLog.gatingResults.length - 10} more</li>`;
+      }
+      html += '</ul>';
+      html += '</div>';
+
+      // 4. Priority boosts
+      html += '<div class="audit-section">';
+      html += '<h4>4. Priority Boosts Applied</h4>';
+      html += '<pre>';
+      html += `Selected priorities: ${auditLog.inputs.priorities.join(', ')}\n\n`;
+      html += 'Priority weights:\n';
+      Object.entries(PRIORITY_WEIGHTS).forEach(([key, val]) => {
+        const selected = auditLog.inputs.priorities.includes(key) ? ' ← SELECTED' : '';
+        html += `  ${key}: +${Math.round(val * 100)}%${selected}\n`;
+      });
+      html += '</pre>';
+      html += '</div>';
+
+      // 5. Capacity calculation
+      html += '<div class="audit-section">';
+      html += '<h4>5. Parallel Capacity Calculation</h4>';
+      html += '<pre>';
+      html += `Revenue: $${auditLog.inputs.annualRevenue}M → Base capacity: `;
+      let sizeCap = 1;
+      for (const bracket of SIZE_CAPACITY) {
+        if (auditLog.inputs.annualRevenue <= bracket.maxM) {
+          sizeCap = bracket.cap;
+          html += `${sizeCap}\n`;
+          break;
+        }
+      }
+      html += `Change capability: ${auditLog.inputs.changeCapability} → ${CHANGE_CAP_BOOST[auditLog.inputs.changeCapability]}\n`;
+      html += `Budget band: ${auditLog.inputs.budgetBand} → ${BUDGET_CAP_BOOST[auditLog.inputs.budgetBand]}\n`;
+      html += `Urgency: ${auditLog.inputs.urgency} → ${auditLog.inputs.urgency === 'fast' ? URGENCY_BOOST.fast : 0}\n\n`;
+      html += `Final capacity per phase: ${auditLog.capacity} (clamped to [1,5])`;
+      html += '</pre>';
+      html += '</div>';
+
+      // 6. Budget enforcement
+      html += '<div class="audit-section">';
+      html += '<h4>6. Budget Enforcement</h4>';
+      auditLog.budgetEnforcement.forEach(log => {
+        html += `<p><strong>${log.phase} Phase:</strong></p>`;
+        html += '<pre>';
+        html += `Budget cap: $${formatNumber(Math.round(log.budgetCap))}\n`;
+        html += `Initial spend: $${formatNumber(Math.round(log.initialSpend))} (${log.initialCount} initiatives)\n`;
+        html += `Final spend: $${formatNumber(Math.round(log.finalSpend))} (${log.finalCount} initiatives)\n`;
+        if (log.dropped && log.dropped.length > 0) {
+          html += `Dropped (lowest benefit/cost): ${log.dropped.join(', ')}\n`;
+        } else {
+          html += 'No initiatives dropped.\n';
+        }
+        html += '</pre>';
+      });
+      html += '</div>';
+
+      // 7. Dependencies auto-added
+      html += '<div class="audit-section">';
+      html += '<h4>7. Dependencies Auto-Added</h4>';
+      if (auditLog.dependencyAdded.length > 0) {
+        html += '<ul class="audit-list">';
+        auditLog.dependencyAdded.forEach(dep => {
+          html += `<li><strong>${dep.initiativeId}</strong> added to ${dep.phase} (required by other selections)</li>`;
+        });
+        html += '</ul>';
+      } else {
+        html += '<p>No dependencies were auto-added.</p>';
+      }
+      html += '</div>';
+
+      // 8. ROI calculations sample
+      html += '<div class="audit-section">';
+      html += '<h4>8. ROI Calculations (Sample)</h4>';
+      const samplePhase = PHASES[0];
+      const sampleInitiatives = auditLog.selections[samplePhase]?.slice(0, 3) || [];
+      sampleInitiatives.forEach(init => {
+        html += `<p><strong>${init.name}</strong></p>`;
+        html += '<pre>';
+        html += `Investment: $${formatNumber(Math.round(init.roi.investment))}\n`;
+        html += `Annual benefit: $${formatNumber(Math.round(init.roi.annualBenefit))}\n`;
+        html += `Payback: ${Math.round(init.roi.paybackMonths)} months\n`;
+        html += `Benefit details: ${JSON.stringify(init.roi.benefitDetails, null, 2)}`;
+        html += '</pre>';
+      });
+      html += '</div>';
+
+      html += '<div class="button-group">';
+      html += '<button class="btn btn-secondary" onclick="copyAuditText()">Copy Audit as Text</button>';
+      html += '</div>';
+
+      html += '</div>';
+
+      output.innerHTML = html;
+    }
+
+    function copyAuditText() {
+      const auditOutput = document.getElementById('audit-output');
+      const text = auditOutput.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Audit trail copied to clipboard!');
+      });
+    }
+
+    function formatNumber(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+  </script>
+</body>
+</html>
