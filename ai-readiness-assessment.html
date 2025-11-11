@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Readiness Assessment & Strategic Roadmap</title>
+
+    <!-- Shepherd.js Tour Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/css/shepherd.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/js/shepherd.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 1.8em;
+        }
+
+        .tour-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .tour-button:hover {
+            transform: scale(1.05);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .section h2 {
+            color: #764ba2;
+            font-size: 2em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        /* Assessment Section */
+        .assessment-category {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .assessment-category h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .question label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .question select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .question select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Readiness Score */
+        .readiness-score {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .score-display {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .score-label {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .score-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .score-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .score-item h4 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .score-item .score-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        /* Roadmap */
+        .roadmap-phases {
+            display: grid;
+            gap: 20px;
+        }
+
+        .phase {
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            position: relative;
+        }
+
+        .phase-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .phase-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .phase-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+        .phase h3 {
+            font-size: 1.6em;
+            margin-bottom: 10px;
+        }
+
+        .phase-timeline {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .phase-investment {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .phase-roi {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        .phase-initiatives {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Initiative Cards */
+        .initiative-card {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+        }
+
+        .initiative-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .initiative-card.selected {
+            border-color: #43e97b;
+            background: #f0fff4;
+        }
+
+        .initiative-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .initiative-cost {
+            font-weight: bold;
+            color: #f5576c;
+            margin: 5px 0;
+        }
+
+        .initiative-payback {
+            color: #43e97b;
+            font-weight: 600;
+        }
+
+        .initiative-impact {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        /* Technologies Section */
+        .tech-manager {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .tech-selection {
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .tech-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #43e97b;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            left: 32px;
+        }
+
+        .scenario-summary {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .scenario-summary h3 {
+            margin-bottom: 20px;
+        }
+
+        .summary-metric {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+        }
+
+        .summary-metric .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .summary-metric .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        /* Executive Summary */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+        }
+
+        .summary-card h3 {
+            font-size: 1em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .summary-card .big-number {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .recommendations {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        .recommendations h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .recommendations ul {
+            list-style: none;
+        }
+
+        .recommendations li {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: white;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .export-button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .export-button:hover {
+            transform: scale(1.05);
+        }
+
+        .export-pdf {
+            background: #f5576c;
+            color: white;
+        }
+
+        .export-copy {
+            background: #4facfe;
+            color: white;
+        }
+
+        /* KPIs Section */
+        .kpi-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .kpi-card {
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .kpi-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .kpi-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .kpi-target {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .kpi-progress {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .kpi-progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+
+        .kpi-trend {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #43e97b;
+            font-weight: 600;
+        }
+
+        .kpi-trend.down {
+            color: #f5576c;
+        }
+
+        /* Custom Shepherd.js styling */
+        .shepherd-element {
+            z-index: 9999;
+        }
+
+        .shepherd-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 0 5px;
+        }
+
+        .shepherd-button:hover {
+            background: #764ba2;
+        }
+
+        .shepherd-button-secondary {
+            background: #ccc;
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .tech-manager {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 AI Readiness Assessment & Strategic Roadmap</h1>
+        <button class="tour-button" onclick="startTour()">🎓 Start Guided Tour</button>
+    </div>
+
+    <div class="container">
+        <!-- Assessment Section -->
+        <div id="assessment" class="section">
+            <h2>AI Readiness Assessment</h2>
+            <p style="margin-bottom: 30px; color: #666;">Evaluate your organization across key AI capability dimensions. Your responses will generate a personalized roadmap.</p>
+
+            <div class="assessment-category">
+                <h3>1. Data Infrastructure</h3>
+                <div class="question">
+                    <label>How would you rate your data quality and accessibility?</label>
+                    <select onchange="updateScore()">
+                        <option value="0">Select...</option>
+                        <option value="1">Poor - Data is siloed and inconsistent</option>
+                        <option value="2">Fair - Some integration but gaps remain</option>
+                        <option value="3">Good - Most data is accessible and clean</option>
+                        <option value="4">Excellent - Unified data platform with high quality</option>
+                    </select>
+                </div>
+                <div class="question">
+                    <label>Do you have real-time data pipelines?</label>
+                    <select onchange="updateScore()">
+                        <option value="0">Select...</option>
+                        <option value="1">No real-time capabilities</option>
+                        <option value="2">Limited real-time for critical systems</option>
+                        <option value="3">Most systems support real-time</option>
+                        <option value="4">Comprehensive real-time infrastructure</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="assessment-category">
+                <h3>2. Technology Readiness</h3>
+                <div class="question">
+                    <label>What is your current AI/ML capability level?</label>
+                    <select onchange="updateScore()">
+                        <option value="0">Select...</option>
+                        <option value="1">None - No AI initiatives</option>
+                        <option value="2">Exploring - Pilot projects only</option>
+                        <option value="3">Developing - Some production AI systems</option>
+                        <option value="4">Advanced - AI across multiple functions</option>
+                    </select>
+                </div>
+                <div class="question">
+                    <label>Do you have API-first architecture?</label>
+                    <select onchange="updateScore()">
+                        <option value="0">Select...</option>
+                        <option value="1">Legacy monolithic systems</option>
+                        <option value="2">Partially modernized</option>
+                        <option value="3">Mostly API-driven</option>
+                        <option value="4">Fully API-first with microservices</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="assessment-category">
+                <h3>3. Organizational Readiness</h3>
+                <div class="question">
+                    <label>Leadership support for AI initiatives?</label>
+                    <select onchange="updateScore()">
+                        <option value="0">Select...</option>
+                        <option value="1">Skeptical or unclear</option>
+                        <option value="2">Interested but cautious</option>
+                        <option value="3">Supportive with allocated budget</option>
+                        <option value="4">Champion-level support with clear strategy</option>
+                    </select>
+                </div>
+                <div class="question">
+                    <label>Change management capabilities?</label>
+                    <select onchange="updateScore()">
+                        <option value="0">Select...</option>
+                        <option value="1">Resistant to change</option>
+                        <option value="2">Slow adoption cycles</option>
+                        <option value="3">Moderate ability to adopt new tools</option>
+                        <option value="4">Agile and change-ready culture</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="assessment-category">
+                <h3>4. Process Maturity</h3>
+                <div class="question">
+                    <label>Sales process documentation and standardization?</label>
+                    <select onchange="updateScore()">
+                        <option value="0">Select...</option>
+                        <option value="1">Ad-hoc and undocumented</option>
+                        <option value="2">Partially documented</option>
+                        <option value="3">Well-documented but not enforced</option>
+                        <option value="4">Standardized and consistently followed</option>
+                    </select>
+                </div>
+                <div class="question">
+                    <label>Current use of sales analytics?</label>
+                    <select onchange="updateScore()">
+                        <option value="0">Select...</option>
+                        <option value="1">Minimal - basic reports only</option>
+                        <option value="2">Some dashboards but limited insights</option>
+                        <option value="3">Regular analytics driving decisions</option>
+                        <option value="4">Advanced predictive analytics in use</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Readiness Score -->
+        <div class="readiness-score">
+            <div class="score-label">Your AI Readiness Score</div>
+            <div class="score-display" id="totalScore">--</div>
+            <p>Complete the assessment above to see your score</p>
+
+            <div class="score-breakdown">
+                <div class="score-item">
+                    <h4>Data Infrastructure</h4>
+                    <div class="score-value" id="dataScore">--</div>
+                </div>
+                <div class="score-item">
+                    <h4>Technology</h4>
+                    <div class="score-value" id="techScore">--</div>
+                </div>
+                <div class="score-item">
+                    <h4>Organization</h4>
+                    <div class="score-value" id="orgScore">--</div>
+                </div>
+                <div class="score-item">
+                    <h4>Process</h4>
+                    <div class="score-value" id="processScore">--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategic Roadmap -->
+        <div id="roadmap" class="section">
+            <h2>Strategic AI Roadmap</h2>
+            <p style="margin-bottom: 30px; color: #666;">Three-phase implementation approach with estimated timelines and ROI projections.</p>
+
+            <div class="roadmap-phases">
+                <div class="phase phase-1">
+                    <span class="phase-timeline">0-6 months</span>
+                    <h3>Phase 1: Pilot & Foundation</h3>
+                    <div class="phase-investment">$125,000 - $175,000</div>
+                    <div class="phase-roi">Expected ROI: 150-200% in Year 1</div>
+                    <p>Establish data foundation, implement core AI tools, and run controlled pilots to prove value.</p>
+
+                    <div class="phase-initiatives">
+                        <div class="initiative-card selected" onclick="toggleInitiative(this)">
+                            <h4>Call Transcription AI</h4>
+                            <div class="initiative-cost">Investment: $25K</div>
+                            <div class="initiative-payback">Payback: 4 months</div>
+                            <div class="initiative-impact">Save 8-10 hours/week per manager on note-taking and review</div>
+                        </div>
+                        <div class="initiative-card selected" onclick="toggleInitiative(this)">
+                            <h4>Sales Dashboard</h4>
+                            <div class="initiative-cost">Investment: $40K</div>
+                            <div class="initiative-payback">Payback: 6 months</div>
+                            <div class="initiative-impact">Real-time visibility improves forecast accuracy by 25%</div>
+                        </div>
+                        <div class="initiative-card selected" onclick="toggleInitiative(this)">
+                            <h4>Data Integration</h4>
+                            <div class="initiative-cost">Investment: $60K</div>
+                            <div class="initiative-payback">Payback: 8 months</div>
+                            <div class="initiative-impact">Unify CRM, calendar, and communication data</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase phase-2">
+                    <span class="phase-timeline">6-12 months</span>
+                    <h3>Phase 2: Expand & Automate</h3>
+                    <div class="phase-investment">$175,000 - $250,000</div>
+                    <div class="phase-roi">Expected ROI: 250-350% by Year 2</div>
+                    <p>Scale successful pilots, add predictive analytics, and automate routine tasks across the team.</p>
+
+                    <div class="phase-initiatives">
+                        <div class="initiative-card selected" onclick="toggleInitiative(this)">
+                            <h4>Predictive Lead Scoring</h4>
+                            <div class="initiative-cost">Investment: $50K</div>
+                            <div class="initiative-payback">Payback: 5 months</div>
+                            <div class="initiative-impact">Increase conversion rates by 15-20%</div>
+                        </div>
+                        <div class="initiative-card selected" onclick="toggleInitiative(this)">
+                            <h4>AI Coaching Assistant</h4>
+                            <div class="initiative-cost">Investment: $45K</div>
+                            <div class="initiative-payback">Payback: 6 months</div>
+                            <div class="initiative-impact">Personalized coaching reduces ramp time by 35%</div>
+                        </div>
+                        <div class="initiative-card selected" onclick="toggleInitiative(this)">
+                            <h4>Automated Follow-ups</h4>
+                            <div class="initiative-cost">Investment: $35K</div>
+                            <div class="initiative-payback">Payback: 4 months</div>
+                            <div class="initiative-impact">Never miss a follow-up, improve engagement by 30%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase phase-3">
+                    <span class="phase-timeline">12-24 months</span>
+                    <h3>Phase 3: Scale & Optimize</h3>
+                    <div class="phase-investment">$200,000 - $300,000</div>
+                    <div class="phase-roi">Expected ROI: 400-500% by Year 3</div>
+                    <p>Full AI-enabled sales organization with continuous optimization and advanced predictive capabilities.</p>
+
+                    <div class="phase-initiatives">
+                        <div class="initiative-card selected" onclick="toggleInitiative(this)">
+                            <h4>Revenue Intelligence</h4>
+                            <div class="initiative-cost">Investment: $80K</div>
+                            <div class="initiative-payback">Payback: 7 months</div>
+                            <div class="initiative-impact">360° account intelligence and risk detection</div>
+                        </div>
+                        <div class="initiative-card selected" onclick="toggleInitiative(this)">
+                            <h4>Conversational AI</h4>
+                            <div class="initiative-cost">Investment: $70K</div>
+                            <div class="initiative-payback">Payback: 8 months</div>
+                            <div class="initiative-impact">Handle initial inquiries, qualify leads automatically</div>
+                        </div>
+                        <div class="initiative-card selected" onclick="toggleInitiative(this)">
+                            <h4>Advanced Analytics</h4>
+                            <div class="initiative-cost">Investment: $90K</div>
+                            <div class="initiative-payback">Payback: 9 months</div>
+                            <div class="initiative-impact">Deep insights into win/loss patterns and market trends</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Selection Manager -->
+        <div id="technologies" class="section">
+            <h2>Technology Selection Manager</h2>
+            <p style="margin-bottom: 30px; color: #666;">Toggle initiatives on/off to simulate different investment scenarios and see the impact on your roadmap.</p>
+
+            <div class="tech-manager">
+                <div class="tech-selection">
+                    <h3 style="color: #667eea; margin-bottom: 20px;">Available Technologies</h3>
+
+                    <div class="tech-item">
+                        <div>
+                            <strong>Conversation Intelligence</strong>
+                            <div style="font-size: 0.9em; color: #666;">Gong, Chorus.ai, Clari</div>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleTech(this)"></div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div>
+                            <strong>Sales Enablement</strong>
+                            <div style="font-size: 0.9em; color: #666;">Highspot, Seismic, Showpad</div>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleTech(this)"></div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div>
+                            <strong>Predictive Analytics</strong>
+                            <div style="font-size: 0.9em; color: #666;">People.ai, 6sense, Troops</div>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleTech(this)"></div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div>
+                            <strong>Sales Engagement</strong>
+                            <div style="font-size: 0.9em; color: #666;">Outreach, SalesLoft, Apollo</div>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleTech(this)"></div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div>
+                            <strong>Revenue Intelligence</strong>
+                            <div style="font-size: 0.9em; color: #666;">Clari, InsightSquared, Aviso</div>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleTech(this)"></div>
+                    </div>
+
+                    <div class="tech-item">
+                        <div>
+                            <strong>AI Coaching</strong>
+                            <div style="font-size: 0.9em; color: #666;">Mindtickle, Lessonly, Allego</div>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleTech(this)"></div>
+                    </div>
+                </div>
+
+                <div class="scenario-summary">
+                    <h3>Current Scenario Summary</h3>
+
+                    <div class="summary-metric">
+                        <div class="label">Total Investment</div>
+                        <div class="value" id="scenarioInvestment">$665K</div>
+                    </div>
+
+                    <div class="summary-metric">
+                        <div class="label">Annual Benefits (Year 2)</div>
+                        <div class="value" id="scenarioBenefits">$1.85M</div>
+                    </div>
+
+                    <div class="summary-metric">
+                        <div class="label">Net ROI</div>
+                        <div class="value" id="scenarioROI">278%</div>
+                    </div>
+
+                    <div class="summary-metric">
+                        <div class="label">Initiatives Selected</div>
+                        <div class="value" id="scenarioCount">9 of 9</div>
+                    </div>
+
+                    <div class="summary-metric">
+                        <div class="label">Implementation Timeline</div>
+                        <div class="value">24 months</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Executive Summary -->
+        <div id="summary" class="section">
+            <h2>Executive Summary</h2>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h3>TOTAL INVESTMENT</h3>
+                    <div class="big-number">$665K</div>
+                    <p>Across 3 phases over 24 months</p>
+                </div>
+
+                <div class="summary-card">
+                    <h3>ANNUAL BENEFITS</h3>
+                    <div class="big-number">$1.85M</div>
+                    <p>Expected by end of Year 2</p>
+                </div>
+
+                <div class="summary-card">
+                    <h3>NET ROI</h3>
+                    <div class="big-number">278%</div>
+                    <p>Within 24 months of start</p>
+                </div>
+            </div>
+
+            <div class="recommendations">
+                <h3>Strategic Recommendations</h3>
+                <ul>
+                    <li><strong>Start with Foundation:</strong> Prioritize data integration and conversation intelligence in Phase 1 to establish the groundwork for advanced AI capabilities.</li>
+                    <li><strong>Quick Wins:</strong> Call transcription and automated dashboards deliver immediate value and build organizational confidence in AI investments.</li>
+                    <li><strong>Scale Thoughtfully:</strong> Expand only after validating pilots. Use success metrics from Phase 1 to inform Phase 2 decisions.</li>
+                    <li><strong>Change Management:</strong> Invest 15-20% of budget in training, communication, and adoption programs to ensure user buy-in.</li>
+                    <li><strong>Measure Everything:</strong> Establish baseline KPIs before implementation and track progress monthly to demonstrate value.</li>
+                    <li><strong>Governance First:</strong> Create AI ethics guidelines and data privacy protocols before deploying customer-facing AI.</li>
+                </ul>
+            </div>
+
+            <div class="export-buttons">
+                <button class="export-button export-pdf" onclick="exportSummary('pdf')">📄 Export as PDF</button>
+                <button class="export-button export-copy" onclick="exportSummary('copy')">📋 Copy Summary</button>
+            </div>
+        </div>
+
+        <!-- KPIs Dashboard -->
+        <div id="kpis" class="section">
+            <h2>Key Performance Indicators</h2>
+            <p style="margin-bottom: 30px; color: #666;">Monitor success metrics aligned with your phase goals. Set quarterly targets to track progress.</p>
+
+            <div class="kpi-dashboard">
+                <div class="kpi-card">
+                    <h4>AUTOMATION RATE</h4>
+                    <div class="kpi-value">42%</div>
+                    <div class="kpi-target">Target: 60% by Q4</div>
+                    <div class="kpi-progress">
+                        <div class="kpi-progress-bar" style="width: 70%"></div>
+                    </div>
+                    <div class="kpi-trend">↑ +12% vs last quarter</div>
+                </div>
+
+                <div class="kpi-card">
+                    <h4>ORDER CYCLE TIME</h4>
+                    <div class="kpi-value">18 days</div>
+                    <div class="kpi-target">Target: 14 days by Q4</div>
+                    <div class="kpi-progress">
+                        <div class="kpi-progress-bar" style="width: 65%"></div>
+                    </div>
+                    <div class="kpi-trend">↑ -6 days vs last quarter</div>
+                </div>
+
+                <div class="kpi-card">
+                    <h4>FORECAST ACCURACY</h4>
+                    <div class="kpi-value">78%</div>
+                    <div class="kpi-target">Target: 90% by Q4</div>
+                    <div class="kpi-progress">
+                        <div class="kpi-progress-bar" style="width: 87%"></div>
+                    </div>
+                    <div class="kpi-trend">↑ +15% vs last quarter</div>
+                </div>
+
+                <div class="kpi-card">
+                    <h4>REP PRODUCTIVITY</h4>
+                    <div class="kpi-value">$1.2M</div>
+                    <div class="kpi-target">Target: $1.5M by Q4</div>
+                    <div class="kpi-progress">
+                        <div class="kpi-progress-bar" style="width: 80%"></div>
+                    </div>
+                    <div class="kpi-trend">↑ +$200K vs last quarter</div>
+                </div>
+
+                <div class="kpi-card">
+                    <h4>ADMIN TIME SAVED</h4>
+                    <div class="kpi-value">8.5 hrs</div>
+                    <div class="kpi-target">Target: 12 hrs/week by Q4</div>
+                    <div class="kpi-progress">
+                        <div class="kpi-progress-bar" style="width: 71%"></div>
+                    </div>
+                    <div class="kpi-trend">↑ +3.5 hrs vs last quarter</div>
+                </div>
+
+                <div class="kpi-card">
+                    <h4>WIN RATE</h4>
+                    <div class="kpi-value">32%</div>
+                    <div class="kpi-target">Target: 40% by Q4</div>
+                    <div class="kpi-progress">
+                        <div class="kpi-progress-bar" style="width: 80%"></div>
+                    </div>
+                    <div class="kpi-trend">↑ +7% vs last quarter</div>
+                </div>
+
+                <div class="kpi-card">
+                    <h4>FTE OPTIMIZATION</h4>
+                    <div class="kpi-value">2.3x</div>
+                    <div class="kpi-target">Target: 3.0x by Q4</div>
+                    <div class="kpi-progress">
+                        <div class="kpi-progress-bar" style="width: 77%"></div>
+                    </div>
+                    <div class="kpi-trend">↑ +0.8x vs last quarter</div>
+                </div>
+
+                <div class="kpi-card">
+                    <h4>RAMP TIME</h4>
+                    <div class="kpi-value">4.2 mo</div>
+                    <div class="kpi-target">Target: 3.0 mo by Q4</div>
+                    <div class="kpi-progress">
+                        <div class="kpi-progress-bar" style="width: 60%"></div>
+                    </div>
+                    <div class="kpi-trend">↑ -1.8 mo vs last quarter</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; padding: 20px; background: #f8f9ff; border-radius: 10px;">
+                <h3 style="color: #667eea; margin-bottom: 15px;">Set Quarterly Targets</h3>
+                <p style="color: #666; margin-bottom: 15px;">Customize KPI targets based on your organization's goals and baseline performance.</p>
+                <button class="tour-button" onclick="alert('Target setting interface would open here')">Configure Targets</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Assessment scoring
+        function updateScore() {
+            const selects = document.querySelectorAll('select');
+            let dataScore = 0, techScore = 0, orgScore = 0, processScore = 0;
+            let dataCount = 0, techCount = 0, orgCount = 0, processCount = 0;
+
+            selects.forEach((select, index) => {
+                const value = parseInt(select.value) || 0;
+                if (value > 0) {
+                    if (index < 2) { dataScore += value; dataCount++; }
+                    else if (index < 4) { techScore += value; techCount++; }
+                    else if (index < 6) { orgScore += value; orgCount++; }
+                    else { processScore += value; processCount++; }
+                }
+            });
+
+            const dataAvg = dataCount > 0 ? Math.round((dataScore / dataCount) * 25) : 0;
+            const techAvg = techCount > 0 ? Math.round((techScore / techCount) * 25) : 0;
+            const orgAvg = orgCount > 0 ? Math.round((orgScore / orgCount) * 25) : 0;
+            const processAvg = processCount > 0 ? Math.round((processScore / processCount) * 25) : 0;
+
+            document.getElementById('dataScore').textContent = dataAvg;
+            document.getElementById('techScore').textContent = techAvg;
+            document.getElementById('orgScore').textContent = orgAvg;
+            document.getElementById('processScore').textContent = processAvg;
+
+            const total = Math.round((dataAvg + techAvg + orgAvg + processAvg) / 4);
+            document.getElementById('totalScore').textContent = total || '--';
+        }
+
+        // Initiative card toggle
+        function toggleInitiative(card) {
+            card.classList.toggle('selected');
+            updateScenarioSummary();
+        }
+
+        // Technology toggle
+        function toggleTech(toggle) {
+            toggle.classList.toggle('active');
+            updateScenarioSummary();
+        }
+
+        // Update scenario summary
+        function updateScenarioSummary() {
+            const selectedInitiatives = document.querySelectorAll('.initiative-card.selected').length;
+            const activeTechs = document.querySelectorAll('.toggle-switch.active').length;
+
+            const baseInvestment = 665;
+            const baseBenefits = 1850;
+
+            const investmentAdjustment = Math.round(baseInvestment * (selectedInitiatives / 9));
+            const benefitsAdjustment = Math.round(baseBenefits * (activeTechs / 6));
+            const roi = investmentAdjustment > 0 ? Math.round((benefitsAdjustment / investmentAdjustment) * 100) : 0;
+
+            document.getElementById('scenarioInvestment').textContent = `$${investmentAdjustment}K`;
+            document.getElementById('scenarioBenefits').textContent = `$${(benefitsAdjustment / 1000).toFixed(2)}M`;
+            document.getElementById('scenarioROI').textContent = `${roi}%`;
+            document.getElementById('scenarioCount').textContent = `${selectedInitiatives} of 9`;
+        }
+
+        // Export summary
+        function exportSummary(format) {
+            if (format === 'pdf') {
+                alert('PDF export would be generated here using a library like jsPDF or html2pdf.js');
+            } else if (format === 'copy') {
+                const summary = `AI READINESS ASSESSMENT SUMMARY
+
+Total Investment: $665K
+Annual Benefits: $1.85M
+Net ROI: 278%
+
+Key Recommendations:
+• Start with foundation (data integration & conversation intelligence)
+• Focus on quick wins (call transcription, dashboards)
+• Scale thoughtfully after validating pilots
+• Invest in change management (15-20% of budget)
+• Establish baseline KPIs and track monthly
+
+Implementation Timeline: 24 months across 3 phases`;
+
+                navigator.clipboard.writeText(summary).then(() => {
+                    alert('Summary copied to clipboard!');
+                });
+            }
+        }
+
+        // Shepherd.js Tour Configuration
+        let tour;
+
+        function startTour() {
+            if (tour) {
+                tour.complete();
+            }
+
+            tour = new Shepherd.Tour({
+                useModalOverlay: true,
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shepherd-theme-custom',
+                    scrollTo: { behavior: 'smooth', block: 'center' }
+                }
+            });
+
+            // Tour steps based on provided configuration
+            tour.addStep({
+                id: 'step-1',
+                title: 'Start Your AI Readiness Assessment',
+                text: 'Complete each section to benchmark your organization\'s AI maturity. Progress updates automatically.',
+                attachTo: {
+                    element: '#assessment',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        text: 'Begin Assessment',
+                        action: tour.next,
+                        classes: 'shepherd-button'
+                    }
+                ]
+            });
+
+            tour.addStep({
+                id: 'step-2',
+                title: 'View Your Readiness Score',
+                text: 'See your AI readiness level and understand which capabilities are strong or need improvement.',
+                attachTo: {
+                    element: '.readiness-score',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        text: 'Back',
+                        action: tour.back,
+                        classes: 'shepherd-button shepherd-button-secondary'
+                    },
+                    {
+                        text: 'Continue to Roadmap',
+                        action: tour.next,
+                        classes: 'shepherd-button'
+                    }
+                ]
+            });
+
+            tour.addStep({
+                id: 'step-3',
+                title: 'Explore the Strategic Roadmap',
+                text: 'Review your three-phase AI roadmap — Pilot, Expand, and Scale — with timelines and ROI projections.',
+                attachTo: {
+                    element: '#roadmap',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        text: 'Back',
+                        action: tour.back,
+                        classes: 'shepherd-button shepherd-button-secondary'
+                    },
+                    {
+                        text: 'Explore Phases',
+                        action: tour.next,
+                        classes: 'shepherd-button'
+                    }
+                ]
+            });
+
+            tour.addStep({
+                id: 'step-4',
+                title: 'Drill into Each Initiative',
+                text: 'Click any initiative to view its description, investment, payback, and expected financial impact.',
+                attachTo: {
+                    element: '.initiative-card',
+                    on: 'top'
+                },
+                buttons: [
+                    {
+                        text: 'Back',
+                        action: tour.back,
+                        classes: 'shepherd-button shepherd-button-secondary'
+                    },
+                    {
+                        text: 'Select or Deselect',
+                        action: tour.next,
+                        classes: 'shepherd-button'
+                    }
+                ]
+            });
+
+            tour.addStep({
+                id: 'step-5',
+                title: 'Customize Your Roadmap',
+                text: 'Use the Technology Selection Manager to toggle initiatives on or off and simulate different investment scenarios.',
+                attachTo: {
+                    element: '#technologies',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        text: 'Back',
+                        action: tour.back,
+                        classes: 'shepherd-button shepherd-button-secondary'
+                    },
+                    {
+                        text: 'Try Scenario Planning',
+                        action: tour.next,
+                        classes: 'shepherd-button'
+                    }
+                ]
+            });
+
+            tour.addStep({
+                id: 'step-6',
+                title: 'Executive Summary',
+                text: 'Review total investment, annual benefits, and key strategic recommendations to share with leadership.',
+                attachTo: {
+                    element: '#summary',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        text: 'Back',
+                        action: tour.back,
+                        classes: 'shepherd-button shepherd-button-secondary'
+                    },
+                    {
+                        text: 'Export or Copy Summary',
+                        action: tour.next,
+                        classes: 'shepherd-button'
+                    }
+                ]
+            });
+
+            tour.addStep({
+                id: 'step-7',
+                title: 'Monitor Success Metrics',
+                text: 'View KPIs like automation rate, order-cycle reduction, and FTE optimization—aligned with your phase goals.',
+                attachTo: {
+                    element: '#kpis',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        text: 'Back',
+                        action: tour.back,
+                        classes: 'shepherd-button shepherd-button-secondary'
+                    },
+                    {
+                        text: 'Set Quarterly Targets',
+                        action: tour.complete,
+                        classes: 'shepherd-button'
+                    }
+                ]
+            });
+
+            tour.start();
+        }
+
+        // Auto-start tour on first visit
+        window.addEventListener('load', () => {
+            const hasSeenTour = localStorage.getItem('hasSeenAITour');
+            if (!hasSeenTour) {
+                setTimeout(() => {
+                    if (confirm('Welcome! Would you like a guided tour of the AI Readiness Assessment?')) {
+                        startTour();
+                        localStorage.setItem('hasSeenAITour', 'true');
+                    }
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
