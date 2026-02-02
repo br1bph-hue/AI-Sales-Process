@@ -1,0 +1,177 @@
+{
+  "name": "create_branch_quote_workbook",
+  "description": "Creates a standardized Excel workbook for branch sales quotes in a wholesale distribution business. The workbook contains three sheets: Quote_Header (customer and job details), Quote_Lines (itemized pricing with calculated margins), and Summary (totals and overall margin). All formulas and sheet structures are fixed—the tool only inserts data into predefined cells. Use this tool when a sales rep needs to generate a formal quote document for a customer job.",
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "quote_id": {
+        "type": "string",
+        "description": "Unique identifier for this quote (e.g., 'Q-2026-00142'). Used for tracking and reference."
+      },
+      "branch_code": {
+        "type": "string",
+        "enum": ["CLT", "ATL", "DAL", "HOU"],
+        "description": "The branch location code generating this quote. CLT=Charlotte, ATL=Atlanta, DAL=Dallas, HOU=Houston."
+      },
+      "customer_name": {
+        "type": "string",
+        "description": "Legal business name of the customer receiving this quote."
+      },
+      "customer_contact": {
+        "type": "string",
+        "description": "Name of the primary contact person at the customer company."
+      },
+      "job_name": {
+        "type": "string",
+        "description": "Short name or title for the job/project this quote covers (e.g., 'Maple Ridge Phase 2')."
+      },
+      "job_address": {
+        "type": "string",
+        "description": "Physical address where materials will be delivered or the job is located."
+      },
+      "sales_rep": {
+        "type": "string",
+        "description": "Name of the sales representative responsible for this quote."
+      },
+      "quote_date": {
+        "type": "string",
+        "format": "date",
+        "description": "Date the quote is issued (ISO 8601 format: YYYY-MM-DD)."
+      },
+      "expiration_date": {
+        "type": "string",
+        "format": "date",
+        "description": "Date after which this quote is no longer valid (ISO 8601 format: YYYY-MM-DD). Typically 30 days from quote_date."
+      },
+      "payment_terms": {
+        "type": "string",
+        "default": "Net 30",
+        "description": "Payment terms for this quote (e.g., 'Net 30', 'Net 15', 'COD', '2/10 Net 30')."
+      },
+      "freight_charge": {
+        "type": "number",
+        "minimum": 0,
+        "default": 0,
+        "description": "Flat freight/delivery charge in dollars. Set to 0 for customer pickup or included delivery."
+      },
+      "tax_amount": {
+        "type": "number",
+        "minimum": 0,
+        "default": 0,
+        "description": "Sales tax amount in dollars. Set to 0 for tax-exempt customers or if tax is calculated separately."
+      },
+      "line_items": {
+        "type": "array",
+        "description": "Array of products/materials being quoted. Each item becomes a row in the Quote_Lines sheet.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sku": {
+              "type": "string",
+              "description": "Product SKU or item number from the catalog (e.g., 'PVC-4-SCH40-10')."
+            },
+            "description": {
+              "type": "string",
+              "description": "Human-readable product description (e.g., '4\" PVC Schedule 40 Pipe, 10ft')."
+            },
+            "uom": {
+              "type": "string",
+              "description": "Unit of measure for pricing and quantity (e.g., 'EA', 'FT', 'LF', 'CWT', 'TON', 'BDL')."
+            },
+            "quantity": {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "description": "Number of units being quoted. Must be greater than zero."
+            },
+            "list_price": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Standard list price per unit in dollars before any discounts."
+            },
+            "cost": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Branch cost per unit in dollars. Used for margin calculations (not shown to customer)."
+            },
+            "discount_percent": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0,
+              "description": "Discount as a decimal (0.15 = 15% off). Sell_Price = List_Price × (1 - Discount_Percent)."
+            }
+          },
+          "required": ["sku", "description", "uom", "quantity", "list_price", "cost"],
+          "additionalProperties": false
+        },
+        "minItems": 1
+      }
+    },
+    "required": [
+      "quote_id",
+      "branch_code",
+      "customer_name",
+      "customer_contact",
+      "job_name",
+      "job_address",
+      "sales_rep",
+      "quote_date",
+      "expiration_date",
+      "line_items"
+    ],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "file_path": {
+        "type": "string",
+        "description": "Server-side file path where the generated Excel workbook is stored."
+      },
+      "download_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "URL to download the generated Excel file. Valid for a limited time (typically 24 hours)."
+      },
+      "file_name": {
+        "type": "string",
+        "description": "Generated file name (e.g., 'Quote_Q-2026-00142_CLT.xlsx')."
+      },
+      "summary": {
+        "type": "object",
+        "description": "Calculated summary values for confirmation.",
+        "properties": {
+          "subtotal_material": {
+            "type": "number",
+            "description": "Sum of all Extended_Price values from line items."
+          },
+          "freight_charge": {
+            "type": "number",
+            "description": "Freight charge as provided in input."
+          },
+          "tax_amount": {
+            "type": "number",
+            "description": "Tax amount as provided in input."
+          },
+          "grand_total": {
+            "type": "number",
+            "description": "Subtotal_Material + Freight_Charge + Tax_Amount."
+          },
+          "overall_margin_percent": {
+            "type": "number",
+            "description": "Total margin dollars divided by Subtotal_Material (as decimal)."
+          },
+          "line_count": {
+            "type": "integer",
+            "description": "Number of line items in the quote."
+          }
+        },
+        "required": ["subtotal_material", "freight_charge", "tax_amount", "grand_total", "overall_margin_percent", "line_count"]
+      }
+    },
+    "required": ["file_path", "download_url", "file_name", "summary"]
+  }
+}
