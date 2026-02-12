@@ -108,10 +108,11 @@
             cursor: pointer;
         }
 
-        .process-step:hover {
-            transform: scale(1.1);
+        .process-step:hover,
+        .process-step:focus {
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
             border-color: #764ba2;
+            outline: none;
         }
 
         .step-number {
@@ -130,15 +131,25 @@
 
         /* Position each step in a circle */
         .step-1 { top: 0; left: 50%; transform: translateX(-50%); }
+        .step-1:hover { transform: translateX(-50%) scale(1.1); }
         .step-2 { top: 60px; right: 100px; }
+        .step-2:hover { transform: scale(1.1); }
         .step-3 { top: 200px; right: 20px; }
+        .step-3:hover { transform: scale(1.1); }
         .step-4 { bottom: 200px; right: 20px; }
+        .step-4:hover { transform: scale(1.1); }
         .step-5 { bottom: 60px; right: 100px; }
+        .step-5:hover { transform: scale(1.1); }
         .step-6 { bottom: 0; left: 50%; transform: translateX(-50%); }
+        .step-6:hover { transform: translateX(-50%) scale(1.1); }
         .step-7 { bottom: 60px; left: 100px; }
+        .step-7:hover { transform: scale(1.1); }
         .step-8 { bottom: 200px; left: 20px; }
+        .step-8:hover { transform: scale(1.1); }
         .step-9 { top: 200px; left: 20px; }
+        .step-9:hover { transform: scale(1.1); }
         .step-10 { top: 60px; left: 100px; }
+        .step-10:hover { transform: scale(1.1); }
 
         /* Roadmap Pyramid */
         .pyramid-container {
@@ -182,29 +193,39 @@
         .level-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); width: 80%; margin-left: 10%; }
         .level-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); width: 70%; margin-left: 15%; }
 
-        /* Comparison Table */
-        .comparison-table {
+        /* Shared Table Base */
+        .data-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
 
-        .comparison-table th {
+        .data-table th {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px;
+            padding: 15px 20px;
             text-align: left;
+        }
+
+        .data-table td {
+            padding: 15px 18px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9ff;
+        }
+
+        /* Comparison Table Overrides */
+        .comparison-table th {
             font-size: 1.2em;
+            padding: 20px;
         }
 
         .comparison-table td {
             padding: 18px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .comparison-table tr:hover {
-            background: #f8f9ff;
         }
 
         .old-way {
@@ -221,6 +242,13 @@
             font-weight: bold;
             color: #667eea;
             font-size: 1.05em;
+        }
+
+        /* SEAM Table Overrides */
+        .seam-stage {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1em;
         }
 
         /* ROI Cards */
@@ -256,67 +284,120 @@
             line-height: 1.6;
         }
 
-        /* SEAM Framework Table */
-        .seam-table {
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
         }
 
-        .seam-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px;
-            text-align: left;
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .modal-content h3 {
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+        }
+
+        .modal-content p {
+            color: #555;
+            line-height: 1.6;
             font-size: 1em;
         }
 
-        .seam-table td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            vertical-align: top;
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px;
         }
 
-        .seam-table tr:hover {
-            background: #f8f9ff;
+        .modal-close:hover {
+            color: #333;
         }
 
-        .seam-stage {
-            font-weight: bold;
-            color: #667eea;
-            font-size: 1.1em;
+        /* Footer */
+        .page-footer {
+            text-align: center;
+            margin-top: 60px;
+            color: #999;
+            font-size: 0.9em;
         }
 
         @media (max-width: 900px) {
             .circular-container {
                 width: 100%;
                 height: auto;
-                aspect-ratio: 1;
-            }
-
-            .process-step {
-                width: 100px;
-                height: 100px;
-                padding: 10px;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 15px;
+                justify-items: center;
             }
 
             .seam-core {
-                width: 200px;
-                height: 200px;
+                position: static;
+                transform: none;
+                width: 100%;
+                height: auto;
+                border-radius: 15px;
+                padding: 20px;
+                grid-column: 1 / -1;
+            }
+
+            .process-step {
+                position: static;
+                width: 120px;
+                height: 120px;
+                padding: 10px;
+            }
+
+            .step-1, .step-6 { transform: none; }
+            .step-1:hover, .step-6:hover { transform: scale(1.1); }
+
+            .pyramid-level {
+                width: 100% !important;
+                margin-left: 0 !important;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧭 AI-Enabled Sales Process Framework</h1>
-        <p class="subtitle">Structure → Enable → Accelerate → Measure</p>
+        <header>
+            <h1>🧭 AI-Enabled Sales Process Framework</h1>
+            <p class="subtitle">Structure → Enable → Accelerate → Measure</p>
+        </header>
 
+        <main>
         <!-- SEAM Framework Table -->
-        <div class="section">
-            <h2>SEAM Framework Overview</h2>
-            <table class="seam-table">
+        <section class="section" aria-labelledby="seam-heading">
+            <h2 id="seam-heading">SEAM Framework Overview</h2>
+            <table class="data-table seam-table">
                 <thead>
                     <tr>
                         <th>SEAM Stage</th>
@@ -352,11 +433,11 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </section>
 
         <!-- Circular Diagram -->
-        <div class="section">
-            <h2>🔄 AI-Enabled Sales Cycle: 10 Core Disciplines</h2>
+        <section class="section" aria-labelledby="disciplines-heading">
+            <h2 id="disciplines-heading">🔄 AI-Enabled Sales Cycle: 10 Core Disciplines</h2>
             <div class="circular-container">
                 <div class="seam-core">
                     <h3>SEAM</h3>
@@ -418,12 +499,12 @@
                     <div class="step-title">Monthly Performance</div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Comparison Table -->
-        <div class="section">
-            <h2>⚖️ Old Way vs. AI-Enabled Way</h2>
-            <table class="comparison-table">
+        <section class="section" aria-labelledby="comparison-heading">
+            <h2 id="comparison-heading">⚖️ Old Way vs. AI-Enabled Way</h2>
+            <table class="data-table comparison-table">
                 <thead>
                     <tr>
                         <th>Sales Discipline</th>
@@ -484,11 +565,11 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </section>
 
         <!-- Implementation Roadmap -->
-        <div class="section">
-            <h2>🚀 4-Phase Implementation Roadmap</h2>
+        <section class="section" aria-labelledby="roadmap-heading">
+            <h2 id="roadmap-heading">🚀 4-Phase Implementation Roadmap</h2>
             <div class="pyramid-container">
                 <div class="pyramid-level level-4">
                     <span class="duration">270–365 days</span>
@@ -518,11 +599,11 @@
                     <strong>Output:</strong> Foundational data and discipline</p>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- ROI Snapshot -->
-        <div class="section">
-            <h2>💰 ROI Snapshot: Key Benefits</h2>
+        <section class="section" aria-labelledby="roi-heading">
+            <h2 id="roi-heading">💰 ROI Snapshot: Key Benefits</h2>
             <div class="roi-container">
                 <div class="roi-card">
                     <h4>Manager Productivity</h4>
@@ -554,16 +635,29 @@
                     <p>Increase win rate by 10-15% through behavior attribution, pattern recognition, and strategic account insights</p>
                 </div>
             </div>
-        </div>
+        </section>
+        </main>
 
-        <div style="text-align: center; margin-top: 60px; color: #999; font-size: 0.9em;">
+        <footer class="page-footer">
             <p>AI-Enabled Sales Process Framework | Built on SEAM Methodology</p>
+        </footer>
+    </div>
+
+    <div class="modal-overlay" id="stepModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose" aria-label="Close dialog">&times;</button>
+            <h3 id="modalTitle"></h3>
+            <p id="modalDescription"></p>
         </div>
     </div>
 
     <script>
-        // Add hover effects and interactivity
         const steps = document.querySelectorAll('.process-step');
+        const modal = document.getElementById('stepModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDescription = document.getElementById('modalDescription');
+        const modalClose = document.getElementById('modalClose');
+
         const descriptions = {
             1: 'Captures data accurately through AI transcription and key moment flagging',
             2: 'Optimizes time efficiency with AI-suggested routes and priorities',
@@ -577,12 +671,46 @@
             10: 'Enables early intervention with predictive assessments'
         };
 
-        steps.forEach(step => {
-            step.addEventListener('click', function() {
-                const stepNum = this.querySelector('.step-number').textContent;
-                const stepTitle = this.querySelector('.step-title').textContent;
-                alert(`${stepTitle}\n\n${descriptions[stepNum]}`);
+        function openModal(title, description) {
+            modalTitle.textContent = title;
+            modalDescription.textContent = description;
+            modal.classList.add('active');
+            modalClose.focus();
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        steps.forEach(function(step) {
+            step.setAttribute('role', 'button');
+            step.setAttribute('tabindex', '0');
+
+            function handleActivation() {
+                var stepNum = step.querySelector('.step-number').textContent;
+                var stepTitle = step.querySelector('.step-title').textContent;
+                openModal(stepTitle, descriptions[stepNum]);
+            }
+
+            step.addEventListener('click', handleActivation);
+            step.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleActivation();
+                }
             });
+        });
+
+        modalClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
         });
     </script>
 </body>
