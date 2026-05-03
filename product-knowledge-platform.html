@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Knowledge Platform — Wholesale Distribution</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --radius: 8px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            min-height: 100vh;
+        }
+        .app-container { display: flex; min-height: 100vh; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--gray-900);
+            color: white;
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+        .sidebar-header { padding: 0 20px 24px; border-bottom: 1px solid var(--gray-700); }
+        .sidebar-header h1 { font-size: 18px; font-weight: 700; color: white; }
+        .sidebar-header p { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+        .nav-menu { padding: 16px 0; flex: 1; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 20px; cursor: pointer; transition: all 0.2s;
+            color: var(--gray-300); font-size: 14px; border: none; background: none;
+            width: 100%; text-align: left;
+        }
+        .nav-item:hover { background: var(--gray-800); color: white; }
+        .nav-item.active { background: var(--primary); color: white; }
+        .nav-item .icon { width: 20px; text-align: center; font-size: 16px; }
+        .nav-stats {
+            padding: 16px 20px; border-top: 1px solid var(--gray-700);
+            font-size: 12px; color: var(--gray-400);
+        }
+        .nav-stats .stat { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .nav-stats .stat-value { color: var(--primary-light); font-weight: 600; }
+
+        /* Main Content */
+        .main-content {
+            flex: 1; margin-left: 260px; padding: 32px;
+            max-width: calc(100vw - 260px);
+        }
+        .page { display: none; }
+        .page.active { display: block; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h2 { font-size: 24px; font-weight: 700; color: var(--gray-900); }
+        .page-header p { color: var(--gray-500); margin-top: 4px; }
+
+        /* Cards */
+        .card {
+            background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+            padding: 24px; margin-bottom: 16px;
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .card-title { font-size: 16px; font-weight: 600; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 16px; border-radius: var(--radius); font-size: 14px;
+            font-weight: 500; cursor: pointer; border: none; transition: all 0.2s;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { opacity: 0.9; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { opacity: 0.9; }
+        .btn-outline {
+            background: white; color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+        .btn-outline:hover { background: var(--gray-50); }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-lg { padding: 12px 24px; font-size: 16px; }
+
+        /* Forms */
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--gray-700); margin-bottom: 4px; }
+        .form-input, .form-select, .form-textarea {
+            width: 100%; padding: 8px 12px; border: 1px solid var(--gray-300);
+            border-radius: var(--radius); font-size: 14px; transition: border-color 0.2s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+        .form-textarea { min-height: 80px; resize: vertical; }
+
+        /* Grid */
+        .grid { display: grid; gap: 16px; }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+        /* Stats */
+        .stat-card {
+            background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+            padding: 20px; text-align: center;
+        }
+        .stat-card .stat-number { font-size: 28px; font-weight: 700; color: var(--primary); }
+        .stat-card .stat-label { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+
+        /* Tables */
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--gray-200); font-size: 14px; }
+        .table th { font-weight: 600; color: var(--gray-600); font-size: 12px; text-transform: uppercase; }
+        .table tr:hover td { background: var(--gray-50); }
+
+        /* Tags */
+        .tag {
+            display: inline-block; padding: 2px 8px; border-radius: 12px;
+            font-size: 11px; font-weight: 500;
+        }
+        .tag-sub { background: #dbeafe; color: #1e40af; }
+        .tag-comp { background: #dcfce7; color: #166534; }
+        .tag-acc { background: #fef3c7; color: #92400e; }
+        .tag-up { background: #ede9fe; color: #5b21b6; }
+        .tag-category { background: var(--gray-100); color: var(--gray-700); }
+
+        /* Progress */
+        .progress-bar { height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+        .progress-fill.green { background: var(--success); }
+        .progress-fill.yellow { background: var(--warning); }
+        .progress-fill.red { background: var(--danger); }
+        .progress-fill.blue { background: var(--primary); }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 200; align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white; border-radius: var(--radius); box-shadow: var(--shadow-lg);
+            padding: 24px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 18px; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-400); }
+
+        /* Quiz */
+        .quiz-card {
+            background: white; border-radius: 12px; box-shadow: var(--shadow-lg);
+            padding: 40px; max-width: 700px; margin: 0 auto; text-align: center;
+        }
+        .quiz-question { font-size: 20px; font-weight: 600; margin-bottom: 24px; color: var(--gray-900); }
+        .quiz-options { display: grid; gap: 12px; text-align: left; }
+        .quiz-option {
+            padding: 16px; border: 2px solid var(--gray-200); border-radius: var(--radius);
+            cursor: pointer; transition: all 0.2s; font-size: 15px;
+        }
+        .quiz-option:hover { border-color: var(--primary-light); background: rgba(79,70,229,0.05); }
+        .quiz-option.correct { border-color: var(--success); background: rgba(16,185,129,0.1); }
+        .quiz-option.incorrect { border-color: var(--danger); background: rgba(239,68,68,0.1); }
+        .quiz-option.selected { border-color: var(--primary); background: rgba(79,70,229,0.1); }
+
+        /* Streak */
+        .streak-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: white; padding: 6px 14px; border-radius: 20px;
+            font-size: 14px; font-weight: 600;
+        }
+
+        /* Search */
+        .search-box {
+            position: relative; margin-bottom: 20px;
+        }
+        .search-box input {
+            width: 100%; padding: 12px 16px 12px 44px; border: 2px solid var(--gray-200);
+            border-radius: var(--radius); font-size: 16px;
+        }
+        .search-box input:focus { border-color: var(--primary); outline: none; }
+        .search-box .search-icon {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            color: var(--gray-400); font-size: 18px;
+        }
+        .search-results { max-height: 500px; overflow-y: auto; }
+        .search-result-item {
+            padding: 16px; border: 1px solid var(--gray-200); border-radius: var(--radius);
+            margin-bottom: 8px; cursor: pointer; transition: all 0.2s;
+        }
+        .search-result-item:hover { border-color: var(--primary-light); box-shadow: var(--shadow); }
+        .search-result-item h4 { font-size: 15px; margin-bottom: 4px; }
+        .search-result-item p { font-size: 13px; color: var(--gray-500); }
+
+        /* Relationship Map */
+        .rel-map { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; padding: 20px; }
+        .rel-node {
+            padding: 12px 20px; border-radius: var(--radius); font-size: 13px;
+            font-weight: 500; border: 2px solid; cursor: pointer; transition: transform 0.2s;
+        }
+        .rel-node:hover { transform: scale(1.05); }
+        .rel-center {
+            padding: 20px 32px; border-radius: 12px; background: var(--primary);
+            color: white; font-weight: 700; font-size: 15px;
+        }
+
+        /* Spaced Rep Card */
+        .sr-card {
+            background: white; border-radius: 12px; box-shadow: var(--shadow-lg);
+            padding: 40px; max-width: 600px; margin: 0 auto; text-align: center;
+            min-height: 300px; display: flex; flex-direction: column; justify-content: center;
+        }
+        .sr-card .front { font-size: 20px; font-weight: 600; }
+        .sr-card .back { font-size: 16px; color: var(--gray-600); margin-top: 16px; }
+        .sr-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 24px; }
+        .sr-btn {
+            padding: 10px 20px; border-radius: var(--radius); border: none;
+            font-size: 14px; font-weight: 500; cursor: pointer; color: white;
+        }
+        .sr-btn.again { background: var(--danger); }
+        .sr-btn.hard { background: var(--warning); }
+        .sr-btn.good { background: var(--success); }
+        .sr-btn.easy { background: var(--primary); }
+
+        /* Diagnostic */
+        .diag-progress { margin-bottom: 24px; }
+        .diag-progress .label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .mobile-toggle {
+                display: block; position: fixed; top: 12px; left: 12px;
+                z-index: 101; background: var(--primary); color: white;
+                border: none; border-radius: var(--radius); padding: 8px 12px;
+                font-size: 18px; cursor: pointer;
+            }
+        }
+        @media (min-width: 769px) { .mobile-toggle { display: none; } }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-400); }
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-state h3 { font-size: 18px; color: var(--gray-600); margin-bottom: 8px; }
+
+        .knowledge-score {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 50%; font-size: 14px; font-weight: 700;
+        }
+
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .file-upload {
+            border: 2px dashed var(--gray-300); border-radius: var(--radius);
+            padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.2s;
+        }
+        .file-upload:hover { border-color: var(--primary); }
+        .file-upload input { display: none; }
+    </style>
+</head>
+<body>
+    <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">&#9776;</button>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>ProductIQ</h1>
+                <p>Wholesale Distribution Knowledge</p>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-item active" data-page="dashboard"><span class="icon">&#9632;</span> Dashboard</button>
+                <button class="nav-item" data-page="products"><span class="icon">&#9733;</span> Products</button>
+                <button class="nav-item" data-page="relationships"><span class="icon">&#8644;</span> Relationships</button>
+                <button class="nav-item" data-page="learn"><span class="icon">&#9881;</span> Spaced Learning</button>
+                <button class="nav-item" data-page="quiz"><span class="icon">&#10004;</span> Quiz Mode</button>
+                <button class="nav-item" data-page="diagnostic"><span class="icon">&#9878;</span> Diagnostic</button>
+                <button class="nav-item" data-page="lookup"><span class="icon">&#128269;</span> Quick Lookup</button>
+            </nav>
+            <div class="nav-stats">
+                <div class="stat"><span>Products</span><span class="stat-value" id="sidebar-products">0</span></div>
+                <div class="stat"><span>Mastered</span><span class="stat-value" id="sidebar-mastered">0</span></div>
+                <div class="stat"><span>Streak</span><span class="stat-value" id="sidebar-streak">0 days</span></div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <!-- DASHBOARD -->
+            <section class="page active" id="page-dashboard">
+                <div class="page-header">
+                    <h2>Dashboard</h2>
+                    <p>Your product knowledge at a glance</p>
+                </div>
+                <div class="grid grid-4" id="dashboard-stats"></div>
+                <div class="grid grid-2" style="margin-top:24px;">
+                    <div class="card">
+                        <div class="card-header"><span class="card-title">Category Knowledge</span></div>
+                        <div id="category-scores"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><span class="card-title">Due for Review</span></div>
+                        <div id="due-review-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PRODUCTS -->
+            <section class="page" id="page-products">
+                <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <h2>Product Knowledge Base</h2>
+                        <p>Manage your product catalog</p>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-outline" onclick="showImportModal()">Import CSV</button>
+                        <button class="btn btn-primary" onclick="showProductModal()">+ Add Product</button>
+                    </div>
+                </div>
+                <div class="search-box">
+                    <span class="search-icon">&#128269;</span>
+                    <input type="text" id="product-search" placeholder="Search products by name, SKU, or category..." oninput="filterProducts()">
+                </div>
+                <div class="card">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>SKU</th><th>Name</th><th>Category</th><th>Knowledge</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-table-body"></tbody>
+                    </table>
+                    <div id="products-empty" class="empty-state" style="display:none;">
+                        <div class="icon">&#128230;</div>
+                        <h3>No products yet</h3>
+                        <p>Add products manually or import from CSV</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RELATIONSHIPS -->
+            <section class="page" id="page-relationships">
+                <div class="page-header">
+                    <h2>Product Relationships</h2>
+                    <p>Map substitutes, complements, accessories, and upsells</p>
+                </div>
+                <div class="grid grid-2">
+                    <div class="card">
+                        <div class="card-header"><span class="card-title">Add Relationship</span></div>
+                        <div class="form-group">
+                            <label class="form-label">Product A</label>
+                            <select class="form-select" id="rel-product-a"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Relationship Type</label>
+                            <select class="form-select" id="rel-type">
+                                <option value="substitute">Substitute</option>
+                                <option value="complement">Complement</option>
+                                <option value="accessory">Accessory</option>
+                                <option value="upsell">Upsell</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Product B</label>
+                            <select class="form-select" id="rel-product-b"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Notes (optional)</label>
+                            <input class="form-input" id="rel-notes" placeholder="e.g., Same specs but different brand">
+                        </div>
+                        <button class="btn btn-primary" onclick="addRelationship()">Add Relationship</button>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><span class="card-title">Relationship Map</span></div>
+                        <div class="form-group">
+                            <select class="form-select" id="rel-map-select" onchange="showRelationshipMap()">
+                                <option value="">Select a product to view its relationships</option>
+                            </select>
+                        </div>
+                        <div id="relationship-map" class="rel-map"></div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px;">
+                    <div class="card-header"><span class="card-title">All Relationships</span></div>
+                    <table class="table">
+                        <thead><tr><th>Product A</th><th>Type</th><th>Product B</th><th>Notes</th><th>Actions</th></tr></thead>
+                        <tbody id="rel-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SPACED LEARNING -->
+            <section class="page" id="page-learn">
+                <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <h2>Spaced Repetition Learning</h2>
+                        <p>Review products at optimal intervals for long-term retention</p>
+                    </div>
+                    <div class="streak-badge" id="learn-streak">&#128293; 0 day streak</div>
+                </div>
+                <div id="sr-session" style="display:none;">
+                    <div class="sr-card" id="sr-card">
+                        <div class="front" id="sr-front"></div>
+                        <div class="back" id="sr-back" style="display:none;"></div>
+                    </div>
+                    <div class="sr-buttons" id="sr-buttons" style="display:none;">
+                        <button class="sr-btn again" onclick="rateSR(0)">Again</button>
+                        <button class="sr-btn hard" onclick="rateSR(1)">Hard</button>
+                        <button class="sr-btn good" onclick="rateSR(2)">Good</button>
+                        <button class="sr-btn easy" onclick="rateSR(3)">Easy</button>
+                    </div>
+                    <div style="text-align:center;margin-top:16px;">
+                        <button class="btn btn-outline" id="sr-reveal" onclick="revealSR()">Show Answer</button>
+                    </div>
+                    <div style="text-align:center;margin-top:12px;color:var(--gray-500);font-size:13px;" id="sr-progress"></div>
+                </div>
+                <div id="sr-empty" class="empty-state">
+                    <div class="icon">&#128218;</div>
+                    <h3 id="sr-empty-title">No cards due for review</h3>
+                    <p id="sr-empty-text">Add products and come back when cards are due</p>
+                    <button class="btn btn-primary" style="margin-top:16px;" onclick="startSRSession()">Start Review Session</button>
+                </div>
+            </section>
+
+            <!-- QUIZ MODE -->
+            <section class="page" id="page-quiz">
+                <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <h2>Quiz Mode</h2>
+                        <p>Test your product knowledge</p>
+                    </div>
+                    <div class="streak-badge" id="quiz-streak">&#128293; 0 correct streak</div>
+                </div>
+                <div id="quiz-setup" class="card" style="max-width:500px;margin:0 auto;">
+                    <h3 style="margin-bottom:16px;">Configure Quiz</h3>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="quiz-category">
+                            <option value="all">All Categories</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Question Type</label>
+                        <select class="form-select" id="quiz-type">
+                            <option value="mixed">Mixed</option>
+                            <option value="identify">Identify Product</option>
+                            <option value="relationship">Relationships</option>
+                            <option value="application">Application Knowledge</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Number of Questions</label>
+                        <select class="form-select" id="quiz-count">
+                            <option value="5">5 questions</option>
+                            <option value="10" selected>10 questions</option>
+                            <option value="20">20 questions</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary btn-lg" style="width:100%;" onclick="startQuiz()">Start Quiz</button>
+                </div>
+                <div id="quiz-active" style="display:none;">
+                    <div class="quiz-card fade-in" id="quiz-card"></div>
+                    <div style="text-align:center;margin-top:16px;color:var(--gray-500);font-size:14px;" id="quiz-progress"></div>
+                </div>
+                <div id="quiz-results" style="display:none;" class="card" style="max-width:600px;margin:0 auto;"></div>
+            </section>
+
+            <!-- DIAGNOSTIC -->
+            <section class="page" id="page-diagnostic">
+                <div class="page-header">
+                    <h2>Diagnostic Assessment</h2>
+                    <p>Identify your knowledge gaps and get a personalized learning path</p>
+                </div>
+                <div id="diag-start" class="card" style="max-width:600px;margin:0 auto;text-align:center;">
+                    <h3>Knowledge Gap Assessment</h3>
+                    <p style="color:var(--gray-500);margin:12px 0 24px;">Answer questions across all categories to identify your strengths and weak spots. Takes about 5 minutes.</p>
+                    <button class="btn btn-primary btn-lg" onclick="startDiagnostic()">Start Assessment</button>
+                </div>
+                <div id="diag-active" style="display:none;">
+                    <div class="diag-progress">
+                        <div class="label"><span id="diag-category-label">Category</span><span id="diag-count"></span></div>
+                        <div class="progress-bar"><div class="progress-fill blue" id="diag-progress-bar"></div></div>
+                    </div>
+                    <div class="quiz-card fade-in" id="diag-card"></div>
+                </div>
+                <div id="diag-results" style="display:none;" class="card">
+                    <h3 style="margin-bottom:16px;">Your Knowledge Profile</h3>
+                    <div id="diag-results-content"></div>
+                    <h4 style="margin-top:24px;margin-bottom:12px;">Recommended Learning Path</h4>
+                    <div id="diag-learning-path"></div>
+                </div>
+            </section>
+
+            <!-- QUICK LOOKUP -->
+            <section class="page" id="page-lookup">
+                <div class="page-header">
+                    <h2>Quick-Reference Lookup</h2>
+                    <p>Fast in-the-field product search with relationship context</p>
+                </div>
+                <div class="search-box">
+                    <span class="search-icon">&#128269;</span>
+                    <input type="text" id="lookup-search" placeholder="Search by SKU, name, or description..." oninput="performLookup()" autofocus>
+                </div>
+                <div id="lookup-results" class="search-results"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title" id="product-modal-title">Add Product</span>
+                <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label class="form-label">SKU *</label>
+                    <input class="form-input" id="prod-sku" placeholder="e.g., VLV-2400-BR">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Product Name *</label>
+                    <input class="form-input" id="prod-name" placeholder="e.g., 2-inch Brass Gate Valve">
+                </div>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label class="form-label">Category *</label>
+                    <input class="form-input" id="prod-category" placeholder="e.g., Valves" list="category-list">
+                    <datalist id="category-list"></datalist>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Brand</label>
+                    <input class="form-input" id="prod-brand" placeholder="e.g., Mueller">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-textarea" id="prod-description" placeholder="Key features, specs, common applications..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Applications (what job is this for?)</label>
+                <textarea class="form-textarea" id="prod-applications" placeholder="e.g., Used in potable water systems, irrigation shutoff, commercial plumbing..."></textarea>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label class="form-label">Key Specs</label>
+                    <input class="form-input" id="prod-specs" placeholder="e.g., 200 PSI, NSF-61 certified">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Price Range</label>
+                    <input class="form-input" id="prod-price" placeholder="e.g., $45-65">
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+                <button class="btn btn-outline" onclick="closeProductModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div class="modal-overlay" id="import-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Import Products from CSV</span>
+                <button class="modal-close" onclick="closeImportModal()">&times;</button>
+            </div>
+            <p style="color:var(--gray-500);margin-bottom:16px;font-size:14px;">
+                Upload a CSV file with columns: SKU, Name, Category, Brand, Description, Applications, Specs, Price
+            </p>
+            <div class="file-upload" onclick="document.getElementById('csv-file').click()">
+                <input type="file" id="csv-file" accept=".csv" onchange="handleCSVImport(event)">
+                <p style="color:var(--gray-500);">Click to select CSV file or drag and drop</p>
+            </div>
+            <div id="import-preview" style="margin-top:16px;display:none;"></div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+                <button class="btn btn-outline" onclick="closeImportModal()">Cancel</button>
+                <button class="btn btn-primary" id="import-confirm" style="display:none;" onclick="confirmImport()">Import Products</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ============ DATA LAYER ============
+    const DB_KEY = 'productiq_data';
+    let appData = loadData();
+
+    function loadData() {
+        const saved = localStorage.getItem(DB_KEY);
+        if (saved) return JSON.parse(saved);
+        return {
+            products: [],
+            relationships: [],
+            progress: {},
+            streak: { count: 0, lastDate: null },
+            quizHistory: [],
+            diagnosticResults: null
+        };
+    }
+
+    function saveData() {
+        localStorage.setItem(DB_KEY, JSON.stringify(appData));
+        updateSidebarStats();
+    }
+
+    function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
+
+    // ============ NAVIGATION ============
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('page-' + btn.dataset.page).classList.add('active');
+            document.querySelector('.sidebar').classList.remove('open');
+            if (btn.dataset.page === 'dashboard') renderDashboard();
+            if (btn.dataset.page === 'products') renderProducts();
+            if (btn.dataset.page === 'relationships') renderRelationships();
+            if (btn.dataset.page === 'learn') initSR();
+            if (btn.dataset.page === 'lookup') document.getElementById('lookup-search').focus();
+        });
+    });
+
+    // ============ SIDEBAR STATS ============
+    function updateSidebarStats() {
+        document.getElementById('sidebar-products').textContent = appData.products.length;
+        const mastered = Object.values(appData.progress).filter(p => p.interval >= 21).length;
+        document.getElementById('sidebar-mastered').textContent = mastered;
+        document.getElementById('sidebar-streak').textContent = appData.streak.count + ' days';
+    }
+
+    // ============ DASHBOARD ============
+    function renderDashboard() {
+        const total = appData.products.length;
+        const mastered = Object.values(appData.progress).filter(p => p.interval >= 21).length;
+        const learning = Object.values(appData.progress).filter(p => p.interval > 0 && p.interval < 21).length;
+        const due = getDueCards().length;
+
+        document.getElementById('dashboard-stats').innerHTML = `
+            <div class="stat-card"><div class="stat-number">${total}</div><div class="stat-label">Total Products</div></div>
+            <div class="stat-card"><div class="stat-number">${mastered}</div><div class="stat-label">Mastered</div></div>
+            <div class="stat-card"><div class="stat-number">${learning}</div><div class="stat-label">Learning</div></div>
+            <div class="stat-card"><div class="stat-number">${due}</div><div class="stat-label">Due Today</div></div>
+        `;
+
+        const categories = [...new Set(appData.products.map(p => p.category))];
+        let catHtml = '';
+        categories.forEach(cat => {
+            const catProducts = appData.products.filter(p => p.category === cat);
+            const catMastered = catProducts.filter(p => (appData.progress[p.id]?.interval || 0) >= 21).length;
+            const pct = catProducts.length ? Math.round((catMastered / catProducts.length) * 100) : 0;
+            const color = pct >= 70 ? 'green' : pct >= 40 ? 'yellow' : 'red';
+            catHtml += `<div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+                    <span>${cat}</span><span>${pct}%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill ${color}" style="width:${pct}%"></div></div>
+            </div>`;
+        });
+        document.getElementById('category-scores').innerHTML = catHtml || '<p style="color:var(--gray-400);font-size:14px;">Add products to see category scores</p>';
+
+        const dueCards = getDueCards().slice(0, 5);
+        let dueHtml = '';
+        dueCards.forEach(p => {
+            dueHtml += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:14px;">
+                <span>${p.name}</span><span class="tag tag-category">${p.category}</span>
+            </div>`;
+        });
+        document.getElementById('due-review-list').innerHTML = dueHtml || '<p style="color:var(--gray-400);font-size:14px;">No cards due for review</p>';
+    }
+
+    // ============ PRODUCTS ============
+    let editingProductId = null;
+
+    function renderProducts() {
+        const tbody = document.getElementById('product-table-body');
+        const empty = document.getElementById('products-empty');
+        if (!appData.products.length) {
+            tbody.innerHTML = '';
+            empty.style.display = 'block';
+            return;
+        }
+        empty.style.display = 'none';
+        filterProducts();
+    }
+
+    function filterProducts() {
+        const query = document.getElementById('product-search').value.toLowerCase();
+        const filtered = appData.products.filter(p =>
+            p.name.toLowerCase().includes(query) ||
+            p.sku.toLowerCase().includes(query) ||
+            p.category.toLowerCase().includes(query)
+        );
+        const tbody = document.getElementById('product-table-body');
+        tbody.innerHTML = filtered.map(p => {
+            const prog = appData.progress[p.id];
+            const score = prog ? Math.min(100, Math.round((prog.interval / 21) * 100)) : 0;
+            const color = score >= 70 ? 'green' : score >= 40 ? 'yellow' : 'red';
+            return `<tr>
+                <td><code>${p.sku}</code></td>
+                <td>${p.name}</td>
+                <td><span class="tag tag-category">${p.category}</span></td>
+                <td><div class="progress-bar" style="width:80px;"><div class="progress-fill ${color}" style="width:${score}%"></div></div></td>
+                <td>
+                    <button class="btn btn-sm btn-outline" onclick="editProduct('${p.id}')">Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteProduct('${p.id}')">Del</button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    function showProductModal(id) {
+        editingProductId = id || null;
+        document.getElementById('product-modal-title').textContent = id ? 'Edit Product' : 'Add Product';
+        if (id) {
+            const p = appData.products.find(x => x.id === id);
+            document.getElementById('prod-sku').value = p.sku;
+            document.getElementById('prod-name').value = p.name;
+            document.getElementById('prod-category').value = p.category;
+            document.getElementById('prod-brand').value = p.brand || '';
+            document.getElementById('prod-description').value = p.description || '';
+            document.getElementById('prod-applications').value = p.applications || '';
+            document.getElementById('prod-specs').value = p.specs || '';
+            document.getElementById('prod-price').value = p.price || '';
+        } else {
+            ['prod-sku','prod-name','prod-category','prod-brand','prod-description','prod-applications','prod-specs','prod-price'].forEach(id => document.getElementById(id).value = '');
+        }
+        document.getElementById('product-modal').classList.add('active');
+        updateCategoryDatalist();
+    }
+
+    function closeProductModal() { document.getElementById('product-modal').classList.remove('active'); }
+
+    function editProduct(id) { showProductModal(id); }
+
+    function deleteProduct(id) {
+        if (!confirm('Delete this product?')) return;
+        appData.products = appData.products.filter(p => p.id !== id);
+        appData.relationships = appData.relationships.filter(r => r.productA !== id && r.productB !== id);
+        delete appData.progress[id];
+        saveData();
+        renderProducts();
+    }
+
+    function saveProduct() {
+        const sku = document.getElementById('prod-sku').value.trim();
+        const name = document.getElementById('prod-name').value.trim();
+        const category = document.getElementById('prod-category').value.trim();
+        if (!sku || !name || !category) { alert('SKU, Name, and Category are required.'); return; }
+
+        const product = {
+            id: editingProductId || generateId(),
+            sku, name, category,
+            brand: document.getElementById('prod-brand').value.trim(),
+            description: document.getElementById('prod-description').value.trim(),
+            applications: document.getElementById('prod-applications').value.trim(),
+            specs: document.getElementById('prod-specs').value.trim(),
+            price: document.getElementById('prod-price').value.trim()
+        };
+
+        if (editingProductId) {
+            const idx = appData.products.findIndex(p => p.id === editingProductId);
+            appData.products[idx] = product;
+        } else {
+            appData.products.push(product);
+            appData.progress[product.id] = { interval: 0, ease: 2.5, due: Date.now(), reps: 0 };
+        }
+        saveData();
+        closeProductModal();
+        renderProducts();
+    }
+
+    function updateCategoryDatalist() {
+        const cats = [...new Set(appData.products.map(p => p.category))];
+        document.getElementById('category-list').innerHTML = cats.map(c => `<option value="${c}">`).join('');
+    }
+
+    // ============ CSV IMPORT ============
+    let csvData = [];
+
+    function showImportModal() { document.getElementById('import-modal').classList.add('active'); }
+    function closeImportModal() { document.getElementById('import-modal').classList.remove('active'); csvData = []; }
+
+    function handleCSVImport(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const lines = e.target.result.split('\n').filter(l => l.trim());
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            csvData = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                const row = {};
+                headers.forEach((h, idx) => { row[h] = (values[idx] || '').trim(); });
+                if (row.sku || row.name) csvData.push(row);
+            }
+            document.getElementById('import-preview').style.display = 'block';
+            document.getElementById('import-preview').innerHTML = `<p style="font-size:14px;color:var(--gray-600);"><strong>${csvData.length}</strong> products found in CSV</p>`;
+            document.getElementById('import-confirm').style.display = 'inline-flex';
+        };
+        reader.readAsText(file);
+    }
+
+    function parseCSVLine(line) {
+        const result = []; let current = ''; let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+            if (line[i] === '"') { inQuotes = !inQuotes; }
+            else if (line[i] === ',' && !inQuotes) { result.push(current); current = ''; }
+            else { current += line[i]; }
+        }
+        result.push(current);
+        return result;
+    }
+
+    function confirmImport() {
+        csvData.forEach(row => {
+            const product = {
+                id: generateId(),
+                sku: row.sku || row.SKU || '',
+                name: row.name || row.Name || row.product || '',
+                category: row.category || row.Category || 'Uncategorized',
+                brand: row.brand || row.Brand || '',
+                description: row.description || row.Description || '',
+                applications: row.applications || row.Applications || '',
+                specs: row.specs || row.Specs || row['key specs'] || '',
+                price: row.price || row.Price || ''
+            };
+            appData.products.push(product);
+            appData.progress[product.id] = { interval: 0, ease: 2.5, due: Date.now(), reps: 0 };
+        });
+        saveData();
+        closeImportModal();
+        renderProducts();
+        alert(`Successfully imported ${csvData.length} products!`);
+    }
+
+    // ============ RELATIONSHIPS ============
+    function renderRelationships() {
+        const selA = document.getElementById('rel-product-a');
+        const selB = document.getElementById('rel-product-b');
+        const selMap = document.getElementById('rel-map-select');
+        const opts = appData.products.map(p => `<option value="${p.id}">${p.sku} — ${p.name}</option>`).join('');
+        selA.innerHTML = '<option value="">Select product...</option>' + opts;
+        selB.innerHTML = '<option value="">Select product...</option>' + opts;
+        selMap.innerHTML = '<option value="">Select a product to view its relationships</option>' + opts;
+
+        const tbody = document.getElementById('rel-table-body');
+        tbody.innerHTML = appData.relationships.map(r => {
+            const pA = appData.products.find(p => p.id === r.productA);
+            const pB = appData.products.find(p => p.id === r.productB);
+            if (!pA || !pB) return '';
+            const typeClass = { substitute: 'tag-sub', complement: 'tag-comp', accessory: 'tag-acc', upsell: 'tag-up' }[r.type];
+            return `<tr>
+                <td>${pA.name}</td>
+                <td><span class="tag ${typeClass}">${r.type}</span></td>
+                <td>${pB.name}</td>
+                <td style="font-size:12px;color:var(--gray-500);">${r.notes || '—'}</td>
+                <td><button class="btn btn-sm btn-danger" onclick="deleteRelationship('${r.id}')">Del</button></td>
+            </tr>`;
+        }).join('');
+    }
+
+    function addRelationship() {
+        const productA = document.getElementById('rel-product-a').value;
+        const productB = document.getElementById('rel-product-b').value;
+        const type = document.getElementById('rel-type').value;
+        const notes = document.getElementById('rel-notes').value.trim();
+        if (!productA || !productB) { alert('Select both products'); return; }
+        if (productA === productB) { alert('Cannot create relationship with same product'); return; }
+
+        appData.relationships.push({ id: generateId(), productA, productB, type, notes });
+        saveData();
+        renderRelationships();
+        document.getElementById('rel-notes').value = '';
+    }
+
+    function deleteRelationship(id) {
+        appData.relationships = appData.relationships.filter(r => r.id !== id);
+        saveData();
+        renderRelationships();
+    }
+
+    function showRelationshipMap() {
+        const productId = document.getElementById('rel-map-select').value;
+        const container = document.getElementById('relationship-map');
+        if (!productId) { container.innerHTML = ''; return; }
+
+        const product = appData.products.find(p => p.id === productId);
+        const rels = appData.relationships.filter(r => r.productA === productId || r.productB === productId);
+
+        let html = `<div class="rel-center">${product.name}</div>`;
+        const colors = { substitute: '#3b82f6', complement: '#10b981', accessory: '#f59e0b', upsell: '#8b5cf6' };
+
+        rels.forEach(r => {
+            const otherId = r.productA === productId ? r.productB : r.productA;
+            const other = appData.products.find(p => p.id === otherId);
+            if (!other) return;
+            html += `<div class="rel-node" style="border-color:${colors[r.type]};color:${colors[r.type]};">${other.name}<br><small>${r.type}</small></div>`;
+        });
+
+        container.innerHTML = html || '<p style="color:var(--gray-400);">No relationships mapped</p>';
+    }
+
+    // ============ SPACED REPETITION ============
+    let srQueue = [];
+    let srIndex = 0;
+    let srRevealed = false;
+
+    function getDueCards() {
+        const now = Date.now();
+        return appData.products.filter(p => {
+            const prog = appData.progress[p.id];
+            return prog && prog.due <= now;
+        });
+    }
+
+    function initSR() {
+        updateStreakDisplay();
+        const due = getDueCards();
+        if (due.length > 0) {
+            document.getElementById('sr-empty-title').textContent = `${due.length} cards due for review`;
+            document.getElementById('sr-empty-text').textContent = 'Click below to start your review session';
+        } else if (appData.products.length === 0) {
+            document.getElementById('sr-empty-title').textContent = 'No products yet';
+            document.getElementById('sr-empty-text').textContent = 'Add products first to start learning';
+        } else {
+            document.getElementById('sr-empty-title').textContent = 'All caught up!';
+            document.getElementById('sr-empty-text').textContent = 'No cards due. Come back later for more reviews.';
+        }
+    }
+
+    function startSRSession() {
+        srQueue = getDueCards();
+        if (srQueue.length === 0) {
+            srQueue = appData.products.slice(0, 10);
+        }
+        if (srQueue.length === 0) return;
+        srQueue.sort(() => Math.random() - 0.5);
+        srIndex = 0;
+        document.getElementById('sr-session').style.display = 'block';
+        document.getElementById('sr-empty').style.display = 'none';
+        showSRCard();
+    }
+
+    function showSRCard() {
+        if (srIndex >= srQueue.length) { endSRSession(); return; }
+        const p = srQueue[srIndex];
+        srRevealed = false;
+        document.getElementById('sr-front').textContent = `What is ${p.sku}?`;
+        document.getElementById('sr-back').innerHTML = `
+            <strong>${p.name}</strong><br>
+            <span style="color:var(--gray-500)">${p.category}${p.brand ? ' • ' + p.brand : ''}</span>
+            ${p.description ? '<br><br>' + p.description : ''}
+            ${p.applications ? '<br><br><em>Applications:</em> ' + p.applications : ''}
+        `;
+        document.getElementById('sr-back').style.display = 'none';
+        document.getElementById('sr-buttons').style.display = 'none';
+        document.getElementById('sr-reveal').style.display = 'inline-flex';
+        document.getElementById('sr-progress').textContent = `Card ${srIndex + 1} of ${srQueue.length}`;
+    }
+
+    function revealSR() {
+        srRevealed = true;
+        document.getElementById('sr-back').style.display = 'block';
+        document.getElementById('sr-buttons').style.display = 'flex';
+        document.getElementById('sr-reveal').style.display = 'none';
+    }
+
+    function rateSR(quality) {
+        const p = srQueue[srIndex];
+        let prog = appData.progress[p.id] || { interval: 0, ease: 2.5, due: Date.now(), reps: 0 };
+
+        if (quality === 0) {
+            prog.interval = 0; prog.reps = 0;
+        } else if (quality === 1) {
+            prog.interval = Math.max(1, prog.interval * 0.5);
+        } else if (quality === 2) {
+            prog.interval = prog.interval === 0 ? 1 : prog.interval * prog.ease;
+            prog.reps++;
+        } else {
+            prog.interval = prog.interval === 0 ? 3 : prog.interval * prog.ease * 1.3;
+            prog.reps++;
+            prog.ease = Math.min(3.0, prog.ease + 0.1);
+        }
+
+        prog.due = Date.now() + (prog.interval * 24 * 60 * 60 * 1000);
+        appData.progress[p.id] = prog;
+        updateStreak();
+        saveData();
+        srIndex++;
+        showSRCard();
+    }
+
+    function endSRSession() {
+        document.getElementById('sr-session').style.display = 'none';
+        document.getElementById('sr-empty').style.display = 'block';
+        document.getElementById('sr-empty-title').textContent = 'Session complete!';
+        document.getElementById('sr-empty-text').textContent = `Reviewed ${srQueue.length} cards. Great work!`;
+        updateStreakDisplay();
+    }
+
+    function updateStreak() {
+        const today = new Date().toDateString();
+        if (appData.streak.lastDate !== today) {
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+            if (appData.streak.lastDate === yesterday) {
+                appData.streak.count++;
+            } else if (appData.streak.lastDate !== today) {
+                appData.streak.count = 1;
+            }
+            appData.streak.lastDate = today;
+        }
+    }
+
+    function updateStreakDisplay() {
+        document.getElementById('learn-streak').innerHTML = `&#128293; ${appData.streak.count} day streak`;
+    }
+
+    // ============ QUIZ MODE ============
+    let quizQuestions = [];
+    let quizIndex = 0;
+    let quizCorrect = 0;
+    let quizCurrentStreak = 0;
+
+    function startQuiz() {
+        const category = document.getElementById('quiz-category').value;
+        const type = document.getElementById('quiz-type').value;
+        const count = parseInt(document.getElementById('quiz-count').value);
+
+        let pool = category === 'all' ? [...appData.products] : appData.products.filter(p => p.category === category);
+        if (pool.length < 4) { alert('Need at least 4 products in selected category to generate quiz'); return; }
+
+        quizQuestions = generateQuizQuestions(pool, type, count);
+        quizIndex = 0;
+        quizCorrect = 0;
+        quizCurrentStreak = 0;
+
+        document.getElementById('quiz-setup').style.display = 'none';
+        document.getElementById('quiz-active').style.display = 'block';
+        document.getElementById('quiz-results').style.display = 'none';
+        showQuizQuestion();
+    }
+
+    function generateQuizQuestions(pool, type, count) {
+        const questions = [];
+        const shuffled = [...pool].sort(() => Math.random() - 0.5);
+
+        for (let i = 0; i < Math.min(count, shuffled.length); i++) {
+            const product = shuffled[i];
+            const others = pool.filter(p => p.id !== product.id).sort(() => Math.random() - 0.5).slice(0, 3);
+            const qType = type === 'mixed' ? ['identify', 'relationship', 'application'][Math.floor(Math.random() * 3)] : type;
+
+            if (qType === 'identify') {
+                const options = [...others.map(o => o.name), product.name].sort(() => Math.random() - 0.5);
+                questions.push({
+                    question: `Which product has SKU "${product.sku}"?`,
+                    options,
+                    correct: product.name,
+                    productId: product.id
+                });
+            } else if (qType === 'application' && product.applications) {
+                const options = [...others.map(o => o.name), product.name].sort(() => Math.random() - 0.5);
+                questions.push({
+                    question: `Which product is used for: ${product.applications.substring(0, 100)}?`,
+                    options,
+                    correct: product.name,
+                    productId: product.id
+                });
+            } else {
+                const rels = appData.relationships.filter(r => r.productA === product.id || r.productB === product.id);
+                if (rels.length > 0) {
+                    const rel = rels[0];
+                    const otherId = rel.productA === product.id ? rel.productB : rel.productA;
+                    const other = appData.products.find(p => p.id === otherId);
+                    if (other) {
+                        const options = [...others.map(o => o.name), other.name].sort(() => Math.random() - 0.5);
+                        questions.push({
+                            question: `What is a ${rel.type} for "${product.name}"?`,
+                            options,
+                            correct: other.name,
+                            productId: product.id
+                        });
+                        continue;
+                    }
+                }
+                const options = [...others.map(o => o.name), product.name].sort(() => Math.random() - 0.5);
+                questions.push({
+                    question: `Which product belongs to the "${product.category}" category and is made by ${product.brand || 'this brand'}?`,
+                    options,
+                    correct: product.name,
+                    productId: product.id
+                });
+            }
+        }
+        return questions;
+    }
+
+    function showQuizQuestion() {
+        if (quizIndex >= quizQuestions.length) { endQuiz(); return; }
+        const q = quizQuestions[quizIndex];
+        document.getElementById('quiz-card').innerHTML = `
+            <div class="quiz-question">${q.question}</div>
+            <div class="quiz-options">
+                ${q.options.map((opt, i) => `<div class="quiz-option" onclick="answerQuiz(this, '${opt.replace(/'/g, "\\'")}')">${opt}</div>`).join('')}
+            </div>
+        `;
+        document.getElementById('quiz-progress').textContent = `Question ${quizIndex + 1} of ${quizQuestions.length} • ${quizCorrect} correct`;
+        document.getElementById('quiz-streak').innerHTML = `&#128293; ${quizCurrentStreak} correct streak`;
+    }
+
+    function answerQuiz(el, answer) {
+        const q = quizQuestions[quizIndex];
+        const options = document.querySelectorAll('#quiz-card .quiz-option');
+        options.forEach(opt => {
+            opt.style.pointerEvents = 'none';
+            if (opt.textContent === q.correct) opt.classList.add('correct');
+        });
+
+        if (answer === q.correct) {
+            el.classList.add('correct');
+            quizCorrect++;
+            quizCurrentStreak++;
+        } else {
+            el.classList.add('incorrect');
+            quizCurrentStreak = 0;
+        }
+
+        setTimeout(() => { quizIndex++; showQuizQuestion(); }, 1500);
+    }
+
+    function endQuiz() {
+        const pct = Math.round((quizCorrect / quizQuestions.length) * 100);
+        document.getElementById('quiz-active').style.display = 'none';
+        document.getElementById('quiz-results').style.display = 'block';
+        document.getElementById('quiz-results').innerHTML = `
+            <div style="text-align:center;padding:20px;">
+                <h3>Quiz Complete!</h3>
+                <div class="stat-number" style="font-size:48px;margin:16px 0;">${pct}%</div>
+                <p style="color:var(--gray-500);">${quizCorrect} of ${quizQuestions.length} correct</p>
+                <button class="btn btn-primary" style="margin-top:20px;" onclick="resetQuiz()">Try Again</button>
+            </div>
+        `;
+        appData.quizHistory.push({ date: Date.now(), score: pct, total: quizQuestions.length, correct: quizCorrect });
+        saveData();
+    }
+
+    function resetQuiz() {
+        document.getElementById('quiz-setup').style.display = 'block';
+        document.getElementById('quiz-active').style.display = 'none';
+        document.getElementById('quiz-results').style.display = 'none';
+    }
+
+    // ============ DIAGNOSTIC ============
+    let diagQuestions = [];
+    let diagIndex = 0;
+    let diagResults = {};
+
+    function startDiagnostic() {
+        const categories = [...new Set(appData.products.map(p => p.category))];
+        if (categories.length === 0) { alert('Add products first to run a diagnostic'); return; }
+
+        diagQuestions = [];
+        diagResults = {};
+        categories.forEach(cat => {
+            diagResults[cat] = { correct: 0, total: 0 };
+            const catProducts = appData.products.filter(p => p.category === cat);
+            const sample = catProducts.sort(() => Math.random() - 0.5).slice(0, 3);
+            sample.forEach(product => {
+                const others = appData.products.filter(p => p.id !== product.id).sort(() => Math.random() - 0.5).slice(0, 3);
+                if (others.length < 3) return;
+                const options = [...others.map(o => o.name), product.name].sort(() => Math.random() - 0.5);
+                diagQuestions.push({
+                    category: cat,
+                    question: `Identify: ${product.sku} — ${product.description || product.applications || 'What product is this?'}`,
+                    options,
+                    correct: product.name
+                });
+            });
+        });
+
+        diagIndex = 0;
+        document.getElementById('diag-start').style.display = 'none';
+        document.getElementById('diag-active').style.display = 'block';
+        document.getElementById('diag-results').style.display = 'none';
+        showDiagQuestion();
+    }
+
+    function showDiagQuestion() {
+        if (diagIndex >= diagQuestions.length) { endDiagnostic(); return; }
+        const q = diagQuestions[diagIndex];
+        const pct = Math.round(((diagIndex) / diagQuestions.length) * 100);
+        document.getElementById('diag-progress-bar').style.width = pct + '%';
+        document.getElementById('diag-category-label').textContent = q.category;
+        document.getElementById('diag-count').textContent = `${diagIndex + 1} / ${diagQuestions.length}`;
+
+        document.getElementById('diag-card').innerHTML = `
+            <div class="quiz-question">${q.question}</div>
+            <div class="quiz-options">
+                ${q.options.map(opt => `<div class="quiz-option" onclick="answerDiag(this, '${opt.replace(/'/g, "\\'")}')">${opt}</div>`).join('')}
+            </div>
+        `;
+    }
+
+    function answerDiag(el, answer) {
+        const q = diagQuestions[diagIndex];
+        const options = document.querySelectorAll('#diag-card .quiz-option');
+        options.forEach(opt => {
+            opt.style.pointerEvents = 'none';
+            if (opt.textContent === q.correct) opt.classList.add('correct');
+        });
+        if (answer === q.correct) {
+            el.classList.add('correct');
+            diagResults[q.category].correct++;
+        } else {
+            el.classList.add('incorrect');
+        }
+        diagResults[q.category].total++;
+        setTimeout(() => { diagIndex++; showDiagQuestion(); }, 1200);
+    }
+
+    function endDiagnostic() {
+        document.getElementById('diag-active').style.display = 'none';
+        document.getElementById('diag-results').style.display = 'block';
+
+        let resultsHtml = '';
+        const sorted = Object.entries(diagResults).sort((a, b) => {
+            const pctA = a[1].total ? a[1].correct / a[1].total : 0;
+            const pctB = b[1].total ? b[1].correct / b[1].total : 0;
+            return pctA - pctB;
+        });
+
+        sorted.forEach(([cat, data]) => {
+            const pct = data.total ? Math.round((data.correct / data.total) * 100) : 0;
+            const color = pct >= 70 ? 'green' : pct >= 40 ? 'yellow' : 'red';
+            resultsHtml += `<div style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;">
+                    <span><strong>${cat}</strong></span><span>${pct}% (${data.correct}/${data.total})</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill ${color}" style="width:${pct}%"></div></div>
+            </div>`;
+        });
+        document.getElementById('diag-results-content').innerHTML = resultsHtml;
+
+        let pathHtml = '';
+        const weakCategories = sorted.filter(([, d]) => d.total && (d.correct / d.total) < 0.7);
+        weakCategories.forEach(([cat], i) => {
+            const catProducts = appData.products.filter(p => p.category === cat);
+            pathHtml += `<div style="padding:12px;border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:8px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="background:var(--primary);color:white;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">${i + 1}</span>
+                    <strong>${cat}</strong> — ${catProducts.length} products to review
+                </div>
+            </div>`;
+        });
+        document.getElementById('diag-learning-path').innerHTML = pathHtml || '<p style="color:var(--gray-500);">Great job! No significant gaps detected.</p>';
+
+        appData.diagnosticResults = diagResults;
+        saveData();
+    }
+
+    // ============ QUICK LOOKUP ============
+    function performLookup() {
+        const query = document.getElementById('lookup-search').value.toLowerCase().trim();
+        const container = document.getElementById('lookup-results');
+        if (!query) { container.innerHTML = ''; return; }
+
+        const results = appData.products.filter(p =>
+            p.sku.toLowerCase().includes(query) ||
+            p.name.toLowerCase().includes(query) ||
+            (p.description && p.description.toLowerCase().includes(query)) ||
+            (p.applications && p.applications.toLowerCase().includes(query)) ||
+            (p.brand && p.brand.toLowerCase().includes(query))
+        ).slice(0, 20);
+
+        container.innerHTML = results.map(p => {
+            const rels = appData.relationships.filter(r => r.productA === p.id || r.productB === p.id);
+            let relHtml = '';
+            if (rels.length > 0) {
+                relHtml = '<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">';
+                rels.forEach(r => {
+                    const otherId = r.productA === p.id ? r.productB : r.productA;
+                    const other = appData.products.find(x => x.id === otherId);
+                    if (!other) return;
+                    const typeClass = { substitute: 'tag-sub', complement: 'tag-comp', accessory: 'tag-acc', upsell: 'tag-up' }[r.type];
+                    relHtml += `<span class="tag ${typeClass}">${r.type}: ${other.name}</span>`;
+                });
+                relHtml += '</div>';
+            }
+            return `<div class="search-result-item">
+                <h4>${p.name} <code style="font-size:12px;color:var(--gray-500);">${p.sku}</code></h4>
+                <p>${p.category}${p.brand ? ' • ' + p.brand : ''}${p.specs ? ' • ' + p.specs : ''}</p>
+                ${p.description ? `<p style="margin-top:4px;font-size:13px;">${p.description}</p>` : ''}
+                ${p.applications ? `<p style="margin-top:4px;font-size:12px;color:var(--primary);"><strong>Applications:</strong> ${p.applications}</p>` : ''}
+                ${p.price ? `<p style="margin-top:4px;font-size:13px;font-weight:600;">${p.price}</p>` : ''}
+                ${relHtml}
+            </div>`;
+        }).join('');
+
+        if (results.length === 0) {
+            container.innerHTML = '<div class="empty-state"><h3>No products found</h3><p>Try a different search term</p></div>';
+        }
+    }
+
+    // ============ INIT ============
+    function init() {
+        updateSidebarStats();
+        renderDashboard();
+        populateQuizCategories();
+    }
+
+    function populateQuizCategories() {
+        const cats = [...new Set(appData.products.map(p => p.category))];
+        const sel = document.getElementById('quiz-category');
+        sel.innerHTML = '<option value="all">All Categories</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    init();
+    </script>
+</body>
+</html>
