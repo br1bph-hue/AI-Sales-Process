@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { dossierInputSchema } from "@/lib/dossier-schema";
 import { apiError, requireUser } from "@/lib/api/auth";
 import { buildStubResponse } from "@/lib/api/dossier-stub";
+import {
+  callDossierSidecar,
+  sidecarConfigured,
+  SidecarError,
+} from "@/lib/api/sidecar";
 
 const RATE_LIMIT_PER_HOUR = 10;
 const STUB_DURATION_MS = 5000;
@@ -102,18 +107,79 @@ export async function POST(request: NextRequest) {
   }
 
   const runId = runRow.id as string;
-  const stub = buildStubResponse(input, STUB_DURATION_MS, runId);
   const storagePath = `outputs/${user.id}/prospect-dossier/${runId}.docx`;
 
-  // Persist a fake completed run synchronously so History shows it.
+  // Try the real sidecar first. On absence (env unset) or failure, fall
+  // back to the in-process stub so the UI keeps working in dev / before
+  // the Python service ships.
+  let filename: string;
+  let sizeBytes: number;
+  let durationMs: number;
+  let highlights = buildStubResponse(input, STUB_DURATION_MS, runId).highlights;
+  let docxBytes: Buffer | null = null;
+
+  if (sidecarConfigured()) {
+    try {
+      const sidecar = await callDossierSidecar({
+        run_id: runId,
+        user_id: user.id,
+        input,
+      });
+      if (sidecar) {
+        docxBytes = Buffer.from(sidecar.docx_base64, "base64");
+        filename = sidecar.filename;
+        sizeBytes = sidecar.size_bytes || docxBytes.length;
+        durationMs = sidecar.duration_ms;
+        highlights = sidecar.highlights;
+      } else {
+        const stub = buildStubResponse(input, STUB_DURATION_MS, runId);
+        filename = stub.output.filename;
+        sizeBytes = stub.output.size_bytes;
+        durationMs = stub.duration_ms;
+      }
+    } catch (err) {
+      console.error("[prospect-dossier] sidecar failed, using stub", err);
+      const stub = buildStubResponse(input, STUB_DURATION_MS, runId);
+      filename = stub.output.filename;
+      sizeBytes = stub.output.size_bytes;
+      durationMs = stub.duration_ms;
+      // Mark the run so we can tell stub vs real later; non-fatal.
+      void supabase
+        .from("skill_runs")
+        .update({
+          error: err instanceof SidecarError ? err.message : String(err),
+        })
+        .eq("id", runId);
+    }
+  } else {
+    const stub = buildStubResponse(input, STUB_DURATION_MS, runId);
+    filename = stub.output.filename;
+    sizeBytes = stub.output.size_bytes;
+    durationMs = stub.duration_ms;
+  }
+
+  if (docxBytes) {
+    const { error: uploadErr } = await supabase.storage
+      .from("dsg-outputs")
+      .upload(storagePath, docxBytes, {
+        contentType:
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        upsert: true,
+      });
+    if (uploadErr) {
+      console.error("[prospect-dossier] storage upload failed", uploadErr);
+      docxBytes = null;
+    }
+  }
+
   const { data: outputRow } = await supabase
     .from("skill_outputs")
     .insert({
       user_id: user.id,
       skill_run_id: runId,
       storage_path: storagePath,
-      filename: stub.output.filename,
-      size_bytes: stub.output.size_bytes,
+      filename,
+      size_bytes: sizeBytes,
     })
     .select("id")
     .single();
@@ -123,17 +189,25 @@ export async function POST(request: NextRequest) {
     .update({
       status: "completed",
       completed_at: new Date().toISOString(),
-      duration_ms: stub.duration_ms,
+      duration_ms: durationMs,
       output_file_id: outputRow?.id ?? null,
-      highlights: stub.highlights,
+      highlights,
     })
     .eq("id", runId);
 
   return NextResponse.json(
     {
-      ...stub,
       request_id: runId,
-      output: { ...stub.output, file_id: outputRow?.id ?? runId },
+      status: "completed" as const,
+      duration_ms: durationMs,
+      output: {
+        file_id: outputRow?.id ?? runId,
+        filename,
+        download_url: `/api/skills/prospect-dossier/download/${runId}`,
+        size_bytes: sizeBytes,
+        expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      },
+      highlights,
     },
     { status: 200 }
   );
