@@ -25,7 +25,8 @@ export const SKILLS: Skill[] = [
     description:
       "Turn a discovery call into a structured debrief with next steps and risks.",
     averageTime: "45 seconds",
-    status: "coming_soon",
+    status: "available",
+    href: "/skills/deal-debrief",
   },
   {
     id: "account-plan",
@@ -33,7 +34,8 @@ export const SKILLS: Skill[] = [
     description:
       "12-month plan for a named account: whitespace, contacts, milestones.",
     averageTime: "2 minutes",
-    status: "coming_soon",
+    status: "available",
+    href: "/skills/account-plan",
   },
   {
     id: "qbr-builder",
@@ -41,7 +43,8 @@ export const SKILLS: Skill[] = [
     description:
       "Quarterly business review deck draft from CRM and product data.",
     averageTime: "90 seconds",
-    status: "coming_soon",
+    status: "available",
+    href: "/skills/qbr-builder",
   },
   {
     id: "pricing-defense",
@@ -49,14 +52,16 @@ export const SKILLS: Skill[] = [
     description:
       "Talk track and proof points for defending price against a competitor.",
     averageTime: "30 seconds",
-    status: "coming_soon",
+    status: "available",
+    href: "/skills/pricing-defense",
   },
   {
     id: "rfp-responder",
     title: "RFP Responder",
     description: "First-draft answers to a wholesale-distribution RFP.",
     averageTime: "3 minutes",
-    status: "coming_soon",
+    status: "available",
+    href: "/skills/rfp-responder",
   },
   {
     id: "territory-map",
@@ -64,7 +69,8 @@ export const SKILLS: Skill[] = [
     description:
       "Prioritized account list for a territory, sorted by revenue potential.",
     averageTime: "2 minutes",
-    status: "coming_soon",
+    status: "available",
+    href: "/skills/territory-map",
   },
   {
     id: "win-loss",
@@ -72,7 +78,8 @@ export const SKILLS: Skill[] = [
     description:
       "Pattern recognition across recent wins and losses for one product line.",
     averageTime: "60 seconds",
-    status: "coming_soon",
+    status: "available",
+    href: "/skills/win-loss",
   },
   {
     id: "rep-coaching",
@@ -80,7 +87,8 @@ export const SKILLS: Skill[] = [
     description:
       "Manager-ready coaching notes from a single rep's last 30 days.",
     averageTime: "45 seconds",
-    status: "coming_soon",
+    status: "available",
+    href: "/skills/rep-coaching",
   },
   {
     id: "pipeline-review",
@@ -88,7 +96,8 @@ export const SKILLS: Skill[] = [
     description:
       "Stage-by-stage commentary on a rep's open pipeline with action items.",
     averageTime: "90 seconds",
-    status: "coming_soon",
+    status: "available",
+    href: "/skills/pipeline-review",
   },
   {
     id: "competitor-watch",
@@ -96,7 +105,8 @@ export const SKILLS: Skill[] = [
     description:
       "Quarterly read on a named competitor: moves, hires, pricing signals.",
     averageTime: "60 seconds",
-    status: "coming_soon",
+    status: "available",
+    href: "/skills/competitor-watch",
   },
   {
     id: "supplier-brief",
@@ -104,7 +114,8 @@ export const SKILLS: Skill[] = [
     description:
       "Brief on a supplier partner: lines, programs, recent news, contacts.",
     averageTime: "60 seconds",
-    status: "coming_soon",
+    status: "available",
+    href: "/skills/supplier-brief",
   },
   {
     id: "exec-summary",
@@ -112,7 +123,8 @@ export const SKILLS: Skill[] = [
     description:
       "Roll-up of the week's activity for a leadership audience.",
     averageTime: "30 seconds",
-    status: "coming_soon",
+    status: "available",
+    href: "/skills/exec-summary",
   },
 ];
 
