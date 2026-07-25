@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GRIDIRON PRIME — Broadcast Football</title>
+<style>
+  :root {
+    --home: #0b2545; --home-accent: #f0a500;
+    --away: #7a0c0c; --away-accent: #d9d9d9;
+    --bug-bg: rgba(10, 12, 18, 0.92);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; }
+  #game { position: fixed; inset: 0; }
+  canvas { display: block; }
+
+  /* ---------- Broadcast score bug ---------- */
+  #scorebug {
+    position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);
+    display: flex; align-items: stretch; height: 46px;
+    border-radius: 6px; overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.08);
+    font-weight: 700; letter-spacing: .04em; user-select: none;
+    backdrop-filter: blur(6px);
+  }
+  .bug-cell { display: flex; align-items: center; padding: 0 14px; color: #fff; }
+  .bug-team { min-width: 96px; justify-content: space-between; gap: 10px; font-size: 17px; }
+  .bug-team .abbr { font-weight: 800; }
+  .bug-team .score { font-size: 20px; font-variant-numeric: tabular-nums; }
+  #bug-away { background: linear-gradient(180deg, #8f1d1d, #5c0808); }
+  #bug-home { background: linear-gradient(180deg, #14386b, #081c3a); }
+  .bug-mid { background: var(--bug-bg); font-size: 15px; color: #e8e8e8; }
+  #bug-clock { min-width: 110px; justify-content: center; gap: 10px; }
+  #bug-qtr { color: #f0c95c; }
+  #bug-dd { min-width: 130px; justify-content: center; color: #fff; }
+  #bug-play-clock { min-width: 44px; justify-content: center; color: #9fd0ff; font-variant-numeric: tabular-nums; }
+  .poss-dot { width: 7px; height: 7px; border-radius: 50%; background: #f0c95c; box-shadow: 0 0 6px #f0c95c; opacity: 0; }
+  .has-ball .poss-dot { opacity: 1; }
+
+  /* ---------- Lower-third banners ---------- */
+  #banner {
+    position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(20px);
+    padding: 10px 28px; border-radius: 4px; color: #fff; font-size: 20px; font-weight: 800;
+    letter-spacing: .06em; text-transform: uppercase;
+    background: linear-gradient(90deg, rgba(11,37,69,.95), rgba(20,56,107,.95), rgba(11,37,69,.95));
+    border-top: 2px solid var(--home-accent);
+    opacity: 0; transition: opacity .25s ease, transform .25s ease; pointer-events: none;
+    text-shadow: 0 2px 6px rgba(0,0,0,.6);
+  }
+  #banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #banner.big { font-size: 34px; padding: 16px 44px; border-top-width: 3px; }
+
+  /* ---------- Commentary ticker ---------- */
+  #commentary {
+    position: fixed; left: 26px; bottom: 26px; max-width: 420px;
+    color: #d8dde6; font-size: 13.5px; line-height: 1.45; font-style: italic;
+    text-shadow: 0 1px 4px rgba(0,0,0,.9); opacity: .92; pointer-events: none;
+  }
+  #commentary .who { color: #f0c95c; font-style: normal; font-weight: 700; margin-right: 6px; }
+
+  /* ---------- Play-call menu ---------- */
+  #playcall {
+    position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at center, rgba(4,8,16,.55) 0%, rgba(2,4,8,.85) 100%);
+    opacity: 0; pointer-events: none; transition: opacity .3s ease;
+  }
+  #playcall.show { opacity: 1; pointer-events: auto; }
+  #playcall h2 {
+    color: #fff; font-size: 15px; letter-spacing: .35em; text-transform: uppercase; font-weight: 600;
+    margin-bottom: 18px; opacity: .85;
+  }
+  #playcall .cards { display: flex; gap: 14px; }
+  .playcard {
+    width: 168px; height: 210px; border-radius: 8px; cursor: pointer; overflow: hidden;
+    background: linear-gradient(180deg, #101826, #0a101c);
+    border: 1px solid rgba(255,255,255,.12);
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    display: flex; flex-direction: column;
+  }
+  .playcard:hover { transform: translateY(-6px); border-color: var(--home-accent); box-shadow: 0 12px 30px rgba(240,165,0,.18); }
+  .playcard canvas { width: 100%; height: 140px; display: block; background: #16321a; }
+  .playcard .pc-name { color: #fff; font-weight: 800; font-size: 14px; padding: 10px 12px 2px; letter-spacing: .02em; }
+  .playcard .pc-type { color: #8fa3c0; font-size: 11px; padding: 0 12px; text-transform: uppercase; letter-spacing: .12em; }
+  .playcard .pc-key { color: #f0c95c; font-size: 11px; padding: 6px 12px; margin-top: auto; }
+  #playcall .special { margin-top: 16px; display: flex; gap: 10px; }
+  .spec-btn {
+    padding: 8px 18px; border-radius: 4px; border: 1px solid rgba(255,255,255,.2);
+    background: rgba(255,255,255,.06); color: #cdd6e4; font-size: 12px; letter-spacing: .1em;
+    text-transform: uppercase; cursor: pointer;
+  }
+  .spec-btn:hover { background: rgba(240,165,0,.2); border-color: var(--home-accent); color: #fff; }
+
+  /* ---------- Controls hint ---------- */
+  #hint {
+    position: fixed; right: 26px; bottom: 26px; color: #aab6c8; font-size: 12px; text-align: right;
+    text-shadow: 0 1px 4px rgba(0,0,0,.9); opacity: .8; pointer-events: none; line-height: 1.6;
+  }
+  #hint b { color: #f0c95c; font-weight: 700; }
+
+  /* ---------- Intro title ---------- */
+  #title-card {
+    position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at 50% 42%, rgba(8,16,32,.32) 0%, rgba(3,6,12,.88) 78%);
+    z-index: 10; transition: opacity .6s ease; cursor: pointer;
+  }
+  /* broadcast vignette over the 3D view */
+  #vignette {
+    position: fixed; inset: 0; pointer-events: none; z-index: 5;
+    background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(0,0,10,.38) 100%);
+  }
+  #title-card.hide { opacity: 0; pointer-events: none; }
+  #title-card .tc-league { color: #f0c95c; letter-spacing: .5em; font-size: 14px; margin-bottom: 12px; font-weight: 600; }
+  #title-card h1 {
+    color: #fff; font-size: 64px; font-weight: 900; letter-spacing: .04em; font-style: italic;
+    text-shadow: 0 0 40px rgba(240,165,0,.35), 0 4px 12px rgba(0,0,0,.8);
+  }
+  #title-card .tc-match { color: #b9c6da; margin-top: 16px; font-size: 18px; letter-spacing: .12em; }
+  #title-card .tc-start { color: #f0c95c; margin-top: 40px; font-size: 14px; letter-spacing: .3em; animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100% { opacity: .4 } 50% { opacity: 1 } }
+</style>
+</head>
+<body>
+<div id="game"></div>
+<div id="vignette"></div>
+
+<div id="scorebug">
+  <div class="bug-cell bug-team" id="bug-away"><span class="abbr">CRM</span><span class="poss-dot"></span><span class="score" id="away-score">0</span></div>
+  <div class="bug-cell bug-team" id="bug-home"><span class="abbr">NVY</span><span class="poss-dot"></span><span class="score" id="home-score">0</span></div>
+  <div class="bug-cell bug-mid" id="bug-clock"><span id="bug-qtr">1st</span><span id="bug-time">5:00</span></div>
+  <div class="bug-cell bug-mid" id="bug-dd">1st &amp; 10</div>
+  <div class="bug-cell bug-mid" id="bug-play-clock">25</div>
+</div>
+
+<div id="banner"></div>
+<div id="commentary"></div>
+<div id="hint"></div>
+
+<div id="playcall">
+  <h2>Select Your Play</h2>
+  <div class="cards" id="playcards"></div>
+  <div class="special" id="special-btns"></div>
+</div>
+
+<div id="title-card">
+  <div class="tc-league">SUNDAY NIGHT FOOTBALL</div>
+  <h1>GRIDIRON PRIME</h1>
+  <div class="tc-match">CRIMSON CITY REDHAWKS &nbsp;at&nbsp; NAVY BAY ADMIRALS</div>
+  <div class="tc-start">CLICK TO KICK OFF</div>
+</div>
+
+<script type="importmap">
+  { "imports": { "three": "./vendor/three.module.js" } }
+</script>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
