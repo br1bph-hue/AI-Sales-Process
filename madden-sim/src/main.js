@@ -14,7 +14,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
+renderer.toneMappingExposure = 1.3;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 container.appendChild(renderer.domElement);
 
@@ -25,7 +25,7 @@ const camera = new THREE.PerspectiveCamera(36, window.innerWidth / window.innerH
 camera.position.set(0, 26, -62);
 
 // ---------------- lighting: night game under the towers ----------------
-scene.add(new THREE.HemisphereLight(0x9db4d6, 0x1c2a1e, 0.55));
+scene.add(new THREE.HemisphereLight(0xa8bdde, 0x24331f, 0.72));
 const key = new THREE.DirectionalLight(0xfff2d8, 2.0);
 key.position.set(60, 80, -40);
 key.castShadow = true;
@@ -58,8 +58,8 @@ const blobTex = (() => {
   c.width = 64; c.height = 64;
   const g = c.getContext('2d');
   const grad = g.createRadialGradient(32, 32, 4, 32, 32, 30);
-  grad.addColorStop(0, 'rgba(0,0,0,0.55)');
-  grad.addColorStop(0.7, 'rgba(0,0,0,0.28)');
+  grad.addColorStop(0, 'rgba(0,0,0,0.72)');
+  grad.addColorStop(0.7, 'rgba(0,0,0,0.38)');
   grad.addColorStop(1, 'rgba(0,0,0,0)');
   g.fillStyle = grad; g.fillRect(0, 0, 64, 64);
   return new THREE.CanvasTexture(c);
@@ -236,7 +236,7 @@ function loop() {
   updateBlobs();
 
   // broadcast exposure dip while the play-call overlay is up
-  const targetExposure = uiState === 'playcall' ? 0.82 : 1.15;
+  const targetExposure = uiState === 'playcall' ? 1.0 : 1.3;
   renderer.toneMappingExposure += (targetExposure - renderer.toneMappingExposure) * Math.min(1, dt * 5);
 
   // camera focus: ball during play, LOS otherwise

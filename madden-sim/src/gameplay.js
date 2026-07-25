@@ -374,6 +374,10 @@ export class Game {
             continue;
           }
           c.mode = 'down'; d.mode = 'down';
+          // separate the tackler so the pile doesn't interpenetrate
+          const away = d.pos.clone().sub(c.pos).setY(0);
+          if (away.lengthSq() < 0.01) away.set(0.5, 0, 0.5);
+          d.pos.copy(c.pos).addScaledVector(away.normalize(), 1.0);
           return this.endPlay(c.pos.x >= 50 ? 'td' : 'tackle', c.pos.x, d);
         }
       }

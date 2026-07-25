@@ -48,7 +48,7 @@ function adBoardMaterial(len) {
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = THREE.RepeatWrapping;
   tex.repeat.set(len / 120, 1);
-  return new THREE.MeshBasicMaterial({ map: tex, toneMapped: false, color: 0x9daabb });
+  return new THREE.MeshBasicMaterial({ map: tex, toneMapped: false });
 }
 
 function glowSpriteTexture() {
@@ -224,11 +224,19 @@ export function buildStadium(scene) {
       else { px = row.sign * (row.dist + jitter); pz = along; }
       const baseY = row.y + Math.random() * 0.06;
       seats.push({ px, pz, baseY, phase: Math.random() * Math.PI * 2, amp: 0.03 + Math.random() * 0.05, idx: ci });
+      // section-level clustering: some sections skew heavily home-colored
+      const section = Math.floor((along + 90) / 14);
+      const sectionHomeBias = (Math.sin(section * 12.9898) * 43758.5453) % 1 < 0.45;
+      const fanScale = 0.85 + Math.random() * 0.3;
       m4.makeRotationY(row.rotY + (Math.random() - 0.5) * 0.4);
+      m4.scale(new THREE.Vector3(1, fanScale, 1));
       m4.setPosition(px, baseY, pz);
       crowd.setMatrixAt(ci, m4);
       if (Math.random() < 0.07) {
         color.setHex(0x141a24);            // empty seat
+      } else if (sectionHomeBias && Math.random() < 0.65) {
+        color.setHex(Math.random() < 0.7 ? 0x16305a : 0xc98f14);
+        color.offsetHSL(0, 0, (Math.random() - 0.5) * 0.1);
       } else {
         color.setHex(pickCrowdColor());
         color.offsetHSL(0, 0, (Math.random() - 0.5) * 0.12);
