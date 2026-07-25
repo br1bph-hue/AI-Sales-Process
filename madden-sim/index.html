@@ -18,52 +18,62 @@
   /* ---------- Broadcast score bug ---------- */
   #scorebug {
     position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);
-    display: flex; align-items: stretch; height: 46px;
+    display: flex; align-items: stretch; height: 50px; z-index: 30;
     border-radius: 6px; overflow: hidden;
-    box-shadow: 0 4px 18px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.08);
+    border-top: 2px solid rgba(240,165,0,.75);
+    box-shadow: 0 6px 22px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.08);
     font-weight: 700; letter-spacing: .04em; user-select: none;
     backdrop-filter: blur(6px);
   }
   .bug-cell { display: flex; align-items: center; padding: 0 14px; color: #fff; }
-  .bug-team { min-width: 96px; justify-content: space-between; gap: 10px; font-size: 17px; }
-  .bug-team .abbr { font-weight: 800; }
-  .bug-team .score { font-size: 20px; font-variant-numeric: tabular-nums; }
+  .bug-team { min-width: 104px; justify-content: space-between; gap: 8px; font-size: 17px; position: relative; }
+  .bug-team .abbr { font-weight: 800; transform: scaleX(.92); }
+  .bug-team .score { font-size: 21px; font-variant-numeric: tabular-nums; transform: scaleX(.94); }
   #bug-away { background: linear-gradient(180deg, #8f1d1d, #5c0808); }
   #bug-home { background: linear-gradient(180deg, #14386b, #081c3a); }
   .bug-mid { background: var(--bug-bg); font-size: 15px; color: #e8e8e8; }
   #bug-clock { min-width: 110px; justify-content: center; gap: 10px; }
   #bug-qtr { color: #f0c95c; }
   #bug-dd { min-width: 130px; justify-content: center; color: #fff; }
-  #bug-play-clock { min-width: 44px; justify-content: center; color: #9fd0ff; font-variant-numeric: tabular-nums; }
-  .poss-dot { width: 7px; height: 7px; border-radius: 50%; background: #f0c95c; box-shadow: 0 0 6px #f0c95c; opacity: 0; }
-  .has-ball .poss-dot { opacity: 1; }
+  #bug-play-clock { min-width: 52px; flex-direction: column; justify-content: center; gap: 1px; }
+  #bug-play-clock .pc-label { font-size: 8px; letter-spacing: .22em; color: #8fa3c0; }
+  #bug-play-clock .pc-val { color: #9fd0ff; font-variant-numeric: tabular-nums; font-size: 16px; }
+  #bug-play-clock.urgent .pc-val { color: #ff5f56; }
+  .poss-ball { font-size: 11px; opacity: 0; filter: drop-shadow(0 0 4px rgba(240,201,92,.8)); }
+  .has-ball .poss-ball { opacity: 1; }
+  .to-pips { position: absolute; bottom: 3px; left: 14px; display: flex; gap: 3px; }
+  .to-pips i { width: 9px; height: 2.5px; background: #f0c95c; border-radius: 1px; display: block; }
 
   /* ---------- Lower-third banners ---------- */
   #banner {
-    position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(20px);
-    padding: 10px 28px; border-radius: 4px; color: #fff; font-size: 20px; font-weight: 800;
-    letter-spacing: .06em; text-transform: uppercase;
-    background: linear-gradient(90deg, rgba(11,37,69,.95), rgba(20,56,107,.95), rgba(11,37,69,.95));
-    border-top: 2px solid var(--home-accent);
+    position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%) translateY(20px);
+    padding: 12px 42px; border-radius: 3px; color: #fff; font-size: 22px; font-weight: 900;
+    letter-spacing: .08em; text-transform: uppercase; z-index: 30;
+    background: linear-gradient(90deg, rgba(11,37,69,.96), rgba(24,64,120,.96), rgba(11,37,69,.96));
+    border-top: 2px solid var(--home-accent); border-bottom: 2px solid var(--home-accent);
     opacity: 0; transition: opacity .25s ease, transform .25s ease; pointer-events: none;
-    text-shadow: 0 2px 6px rgba(0,0,0,.6);
+    text-shadow: 0 2px 8px rgba(0,0,0,.7);
   }
   #banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  #banner.big { font-size: 34px; padding: 16px 44px; border-top-width: 3px; }
+  #banner.big { font-size: 38px; padding: 18px 56px; border-top-width: 3px; border-bottom-width: 3px; }
 
-  /* ---------- Commentary ticker ---------- */
+  /* ---------- Commentary lower-third ---------- */
   #commentary {
-    position: fixed; left: 26px; bottom: 26px; max-width: 420px;
-    color: #d8dde6; font-size: 13.5px; line-height: 1.45; font-style: italic;
-    text-shadow: 0 1px 4px rgba(0,0,0,.9); opacity: .92; pointer-events: none;
+    position: fixed; left: 26px; bottom: 26px; max-width: 460px; z-index: 30;
+    display: none; align-items: baseline; gap: 8px;
+    background: rgba(10,14,24,.88); border-left: 3px solid var(--home-accent);
+    border-radius: 3px; padding: 9px 14px;
+    color: rgba(255,255,255,.93); font-size: 13.5px; line-height: 1.45;
+    pointer-events: none; box-shadow: 0 4px 14px rgba(0,0,0,.5);
   }
-  #commentary .who { color: #f0c95c; font-style: normal; font-weight: 700; margin-right: 6px; }
+  #commentary.on { display: block; }
+  #commentary .who { color: #f0c95c; font-weight: 800; margin-right: 6px; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; }
 
   /* ---------- Play-call menu ---------- */
   #playcall {
     position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    background: radial-gradient(ellipse at center, rgba(4,8,16,.55) 0%, rgba(2,4,8,.85) 100%);
-    opacity: 0; pointer-events: none; transition: opacity .3s ease;
+    background: radial-gradient(ellipse at 50% 42%, rgba(4,8,16,.30) 0%, rgba(2,4,8,.78) 100%);
+    opacity: 0; pointer-events: none; transition: opacity .3s ease; z-index: 8;
   }
   #playcall.show { opacity: 1; pointer-events: auto; }
   #playcall h2 {
@@ -79,7 +89,7 @@
     display: flex; flex-direction: column;
   }
   .playcard:hover { transform: translateY(-6px); border-color: var(--home-accent); box-shadow: 0 12px 30px rgba(240,165,0,.18); }
-  .playcard canvas { width: 100%; height: 140px; display: block; background: #16321a; }
+  .playcard canvas { width: 100%; height: 140px; display: block; background: #0d2415; }
   .playcard .pc-name { color: #fff; font-weight: 800; font-size: 14px; padding: 10px 12px 2px; letter-spacing: .02em; }
   .playcard .pc-type { color: #8fa3c0; font-size: 11px; padding: 0 12px; text-transform: uppercase; letter-spacing: .12em; }
   .playcard .pc-key { color: #f0c95c; font-size: 11px; padding: 6px 12px; margin-top: auto; }
@@ -93,9 +103,11 @@
 
   /* ---------- Controls hint ---------- */
   #hint {
-    position: fixed; right: 26px; bottom: 26px; color: #aab6c8; font-size: 12px; text-align: right;
-    text-shadow: 0 1px 4px rgba(0,0,0,.9); opacity: .8; pointer-events: none; line-height: 1.6;
+    position: fixed; right: 26px; bottom: 26px; color: rgba(255,255,255,.85); font-size: 11.5px; text-align: right;
+    background: rgba(0,0,0,.62); border-radius: 6px; padding: 9px 13px; z-index: 30;
+    pointer-events: none; line-height: 1.7; box-shadow: 0 4px 14px rgba(0,0,0,.4);
   }
+  #hint:empty { display: none; }
   #hint b { color: #f0c95c; font-weight: 700; }
 
   /* ---------- Intro title ---------- */
@@ -125,11 +137,11 @@
 <div id="vignette"></div>
 
 <div id="scorebug">
-  <div class="bug-cell bug-team" id="bug-away"><span class="abbr">CRM</span><span class="poss-dot"></span><span class="score" id="away-score">0</span></div>
-  <div class="bug-cell bug-team" id="bug-home"><span class="abbr">NVY</span><span class="poss-dot"></span><span class="score" id="home-score">0</span></div>
+  <div class="bug-cell bug-team" id="bug-away"><span class="abbr">CRM</span><span class="poss-ball">🏈</span><span class="score" id="away-score">0</span><span class="to-pips"><i></i><i></i><i></i></span></div>
+  <div class="bug-cell bug-team" id="bug-home"><span class="abbr">NVY</span><span class="poss-ball">🏈</span><span class="score" id="home-score">0</span><span class="to-pips"><i></i><i></i><i></i></span></div>
   <div class="bug-cell bug-mid" id="bug-clock"><span id="bug-qtr">1st</span><span id="bug-time">5:00</span></div>
   <div class="bug-cell bug-mid" id="bug-dd">1st &amp; 10</div>
-  <div class="bug-cell bug-mid" id="bug-play-clock">25</div>
+  <div class="bug-cell bug-mid" id="bug-play-clock"><span class="pc-label">PLAY</span><span class="pc-val" id="play-clock-val">25</span></div>
 </div>
 
 <div id="banner"></div>

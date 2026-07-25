@@ -7,35 +7,35 @@ export const GRAVITY = 10.7; // yd/s^2
 
 export const PLAYBOOK = [
   {
-    id: 'hb-dive', name: 'HB Dive', type: 'run', key: '1',
+    id: 'hb-dive', formation: 'I-Form Tight', name: 'HB Dive', type: 'run', key: '1',
     diagram: [[0, 0, 4, 0.5]],
     desc: 'Power run between the tackles',
   },
   {
-    id: 'hb-stretch', name: 'HB Stretch', type: 'run', key: '2',
+    id: 'hb-stretch', formation: 'Singleback Ace', name: 'HB Stretch', type: 'run', key: '2',
     diagram: [[0, 0, 2, 6], [2, 6, 6, 8]],
     desc: 'Outside zone to the edge',
   },
   {
-    id: 'slants', name: 'Quick Slants', type: 'pass', key: '3',
+    id: 'slants', formation: 'Gun Doubles', name: 'Quick Slants', type: 'pass', key: '3',
     routes: { WR1: [[3, 0], [10, 7]], WR2: [[3, 0], [10, -7]], WR3: [[2, 0], [9, 6]], TE: [[4, 0], [7, 3]] },
     diagram: [[0, 0, 3, 0], [3, 0, 8, 4]],
     desc: 'Three-step timing throws inside',
   },
   {
-    id: 'four-verts', name: 'Four Verticals', type: 'pass', key: '4',
+    id: 'four-verts', formation: 'Gun Spread', name: 'Four Verticals', type: 'pass', key: '4',
     routes: { WR1: [[22, 1]], WR2: [[22, -1]], WR3: [[20, 4]], TE: [[16, -2]] },
     diagram: [[0, 0, 9, 0.4]],
     desc: 'Stretch the defense deep',
   },
   {
-    id: 'curls', name: 'Curl Flats', type: 'pass', key: '5',
+    id: 'curls', formation: 'Gun Trips TE', name: 'Curl Flats', type: 'pass', key: '5',
     routes: { WR1: [[9, 0], [7.4, 1.2]], WR2: [[9, 0], [7.4, -1.2]], WR3: [[4, 8]], TE: [[4, -6]] },
     diagram: [[0, 0, 6, 0], [6, 0, 5, 1.4]],
     desc: 'Hook up at the sticks',
   },
   {
-    id: 'pa-post', name: 'PA Deep Post', type: 'pass', key: '6', playAction: true,
+    id: 'pa-post', formation: 'Singleback Deep', name: 'PA Deep Post', type: 'pass', key: '6', playAction: true,
     routes: { WR1: [[10, 0], [22, -8]], WR2: [[12, -3]], WR3: [[6, 9]], TE: [[5, 2]] },
     diagram: [[0, 0, 5, 0], [5, 0, 10, -4]],
     desc: 'Fake the run, hit the post',
@@ -471,6 +471,8 @@ export class Game {
     const gain = Math.round(deadX - this.losX);
     const payload = { result, gain, deadX, defender: defender?.num };
     this.excitement = result === 'td' ? 1 : result === 'int' ? 0.8 : 0.3;
+    // between-play runoff (huddle, spot, play call)
+    this.clock = Math.max(0, this.clock - (result === 'incomplete' ? 5 : 16));
 
     if (result === 'td') {
       this.scores.home += 7; // TD + auto XP

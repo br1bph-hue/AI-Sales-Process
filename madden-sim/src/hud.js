@@ -21,7 +21,8 @@ export class HUD {
       this.drawDiagram(cv, play);
       card.appendChild(cv);
       const nm = document.createElement('div'); nm.className = 'pc-name'; nm.textContent = play.name;
-      const ty = document.createElement('div'); ty.className = 'pc-type'; ty.textContent = play.type === 'run' ? 'Run' : 'Pass';
+      const ty = document.createElement('div'); ty.className = 'pc-type';
+      ty.textContent = `${play.formation ?? 'Gun Doubles'} · ${play.type === 'run' ? 'Run' : 'Pass'}`;
       const key = document.createElement('div'); key.className = 'pc-key'; key.textContent = `Press ${play.key}`;
       card.append(nm, ty, key);
       wrap.appendChild(card);
@@ -38,9 +39,9 @@ export class HUD {
   drawDiagram(cv, play) {
     const g = cv.getContext('2d');
     const W = cv.width, H = cv.height;
-    // mini field
-    g.fillStyle = '#173a1c'; g.fillRect(0, 0, W, H);
-    g.strokeStyle = 'rgba(255,255,255,.25)'; g.lineWidth = 2;
+    // mini field (chalkboard green)
+    g.fillStyle = '#0d2415'; g.fillRect(0, 0, W, H);
+    g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = 2;
     for (let i = 1; i < 5; i++) { g.beginPath(); g.moveTo(0, (H / 5) * i); g.lineTo(W, (H / 5) * i); g.stroke(); }
     // LOS
     g.strokeStyle = 'rgba(90,140,255,.9)'; g.lineWidth = 4;
@@ -99,7 +100,9 @@ export class HUD {
     const dd = ['1st', '2nd', '3rd', '4th'][game.down - 1] ?? '4th';
     const goal = game.fdX >= 50 ? 'Goal' : toGo;
     $('bug-dd').textContent = `${dd} & ${goal}`;
-    $('bug-play-clock').textContent = Math.ceil(game.playClock);
+    const pc = Math.ceil(game.playClock);
+    $('play-clock-val').textContent = pc;
+    $('bug-play-clock').classList.toggle('urgent', pc <= 5);
     $('bug-home').classList.add('has-ball');
     $('bug-away').classList.remove('has-ball');
     return { q, clockLabel: `${m}:${String(s).padStart(2, '0')}` };
@@ -116,10 +119,10 @@ export class HUD {
 
   commentary(who, line) {
     const c = $('commentary');
-    c.innerHTML = `<span class="who">${who}:</span>${line}`;
-    c.style.opacity = 0.95;
+    c.innerHTML = `<span class="who">${who}</span>${line}`;
+    c.classList.add('on');
     clearTimeout(this._cT);
-    this._cT = setTimeout(() => { c.style.opacity = 0; }, 5200);
+    this._cT = setTimeout(() => { c.classList.remove('on'); }, 5200);
   }
 
   hint(html) { $('hint').innerHTML = html; }

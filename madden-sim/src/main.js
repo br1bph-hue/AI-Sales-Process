@@ -52,6 +52,43 @@ const game = new Game(scene, onGameEvent);
 game.lineUp();
 field.setLines(game.losX, game.fdX);
 
+// ---------------- blob shadows: ground every player + the ball ----------------
+const blobTex = (() => {
+  const c = document.createElement('canvas');
+  c.width = 64; c.height = 64;
+  const g = c.getContext('2d');
+  const grad = g.createRadialGradient(32, 32, 4, 32, 32, 30);
+  grad.addColorStop(0, 'rgba(0,0,0,0.55)');
+  grad.addColorStop(0.7, 'rgba(0,0,0,0.28)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = grad; g.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+})();
+const allPlayers = game.all();
+const blobs = new THREE.InstancedMesh(
+  new THREE.PlaneGeometry(1.5, 1.05),
+  new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }),
+  allPlayers.length + 1
+);
+blobs.renderOrder = 1;
+scene.add(blobs);
+const _bm = new THREE.Matrix4();
+const _bq = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+const _bs = new THREE.Vector3();
+function updateBlobs() {
+  allPlayers.forEach((p, i) => {
+    _bs.setScalar(p.mode === 'down' ? 1.5 : 1);
+    _bm.compose(new THREE.Vector3(p.pos.x, 0.015, p.pos.z), _bq, _bs);
+    blobs.setMatrixAt(i, _bm);
+  });
+  const b = game.ball.position;
+  const k = Math.max(0.25, 1 - b.y * 0.12);
+  _bs.set(0.5 * k, 0.5 * k, 1);
+  _bm.compose(new THREE.Vector3(b.x, 0.02, b.z), _bq, _bs);
+  blobs.setMatrixAt(allPlayers.length, _bm);
+  blobs.instanceMatrix.needsUpdate = true;
+}
+
 // ---------------- events ----------------
 let uiState = 'title'; // title | playcall | live | dead | final
 bcam.setMode('blimp');
@@ -176,7 +213,8 @@ window.addEventListener('resize', () => {
 });
 
 // ---------------- main loop ----------------
-window.__debug = () => ({ uiState, state: game.state, clock: game.clock, snapTime: game.snapTime, down: game.down, losX: game.losX, carrier: game.carrier?.role, ballMode: game.ballState.mode, scores: game.scores });
+window.__debug = () => ({ uiState, state: game.state, clock: game.clock, snapTime: game.snapTime, down: game.down, losX: game.losX, fdX: game.fdX, carrier: game.carrier?.role, ballMode: game.ballState.mode, scores: game.scores });
+window.__field = field;
 
 // Fixed-timestep simulation so game speed is independent of render framerate.
 const clock = new THREE.Clock();
@@ -194,7 +232,12 @@ function loop() {
   }
   const dt = Math.max(stepped, 1e-4);
   const t = simT;
-  stadium.update(t, game.excitement);
+  stadium.update(t, game.excitement, dt);
+  updateBlobs();
+
+  // broadcast exposure dip while the play-call overlay is up
+  const targetExposure = uiState === 'playcall' ? 0.82 : 1.15;
+  renderer.toneMappingExposure += (targetExposure - renderer.toneMappingExposure) * Math.min(1, dt * 5);
 
   // camera focus: ball during play, LOS otherwise
   const focus = game.state === 'live' || game.ballState.mode === 'air'

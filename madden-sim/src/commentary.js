@@ -19,10 +19,12 @@ export function commentate(event, payload = {}) {
       return ['Deion', pick(['Nobody home. Gotta put that one on the money.', 'Ball hits the turf — good coverage on the outside.', 'He\'ll want that throw back.'])];
     case 'sack':
       return ['Deion', pick(['Brought him DOWN! Pocket collapsed in a hurry.', 'That\'s a coverage sack — nowhere to go with it.'])];
-    case 'tackle':
-      return payload.gain >= 8
-        ? ['Deion', pick([`Big gain, ${payload.gain} yards — that\'s how you move the chains.`, `He ripped off ${payload.gain}! Defense better tighten up.`])]
-        : ['Marv', pick([`Wrapped up after ${Math.max(0, payload.gain)}.`, `Brought down — gain of ${Math.max(0, payload.gain)}.`])];
+    case 'tackle': {
+      const g = payload.gain;
+      if (g >= 8) return ['Deion', pick([`Big gain, ${g} yards — that\'s how you move the chains.`, `He ripped off ${g}! Defense better tighten up.`])];
+      if (g < 0) return ['Deion', pick([`Stuffed in the backfield — a loss of ${-g}.`, `Blown up behind the line! Loss of ${-g}.`])];
+      return ['Marv', pick([`Wrapped up after ${g}.`, `Brought down — gain of ${g}.`])];
+    }
     case 'broken':
       return ['Deion', pick(['Ooh, broke the tackle! Somebody grab him!', 'Ran right through the arm tackle!'])];
     case 'firstdown':

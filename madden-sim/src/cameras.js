@@ -22,11 +22,11 @@ export class BroadcastCamera {
     if (this.mode === 'broadcast') {
       // high sideline cam perched above the near lower bowl, trucking with the ball
       const x = THREE.MathUtils.clamp(this.focus.x * 0.9, -48, 48);
-      targetPos = new THREE.Vector3(x, 29, -54);
+      targetPos = new THREE.Vector3(x, 27, -52);
       // bias the look-at toward field center so the far bowl stays in frame
       targetLook = new THREE.Vector3(this.focus.x, 1.0, this.focus.z * 0.4 + 3);
       const dist = targetPos.distanceTo(targetLook);
-      this.camera.fov = THREE.MathUtils.lerp(this.camera.fov, THREE.MathUtils.clamp(24 + dist * 0.14, 28, 40), dt * 2);
+      this.camera.fov = THREE.MathUtils.lerp(this.camera.fov, THREE.MathUtils.clamp(22 + dist * 0.14, 26, 38), dt * 2);
     } else if (this.mode === 'endzone') {
       targetPos = new THREE.Vector3(this.focus.x - 22, 7, 0);
       targetLook = new THREE.Vector3(60, 4, 0);

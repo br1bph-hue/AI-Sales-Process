@@ -23,19 +23,29 @@ function paintFieldTexture() {
 
   // --- turf base: alternating 5yd mow stripes with subtle noise ---
   for (let i = 0; i < 24; i++) {
-    const shade = i % 2 ? '#2a6a2f' : '#3d8b43';
+    const shade = i % 2 ? '#2d6e33' : '#37813d';
     g.fillStyle = shade;
     g.fillRect(yd(-60 + i * 5), 0, 5 * ppyX + 1, H);
   }
-  // turf noise
-  const noise = g.createImageData(W, H);
-  // cheap speckle: draw translucent dots instead of per-pixel
-  g.globalAlpha = 0.05;
-  for (let i = 0; i < 26000; i++) {
-    g.fillStyle = Math.random() > 0.5 ? '#1e4a22' : '#4d9a52';
+  // turf grain: speckle + blade streaks
+  g.globalAlpha = 0.09;
+  for (let i = 0; i < 34000; i++) {
+    g.fillStyle = Math.random() > 0.5 ? '#1e4a22' : '#55a05b';
     g.fillRect(Math.random() * W, Math.random() * H, 2, 2);
   }
+  g.globalAlpha = 0.05;
+  for (let i = 0; i < 5000; i++) {
+    g.fillStyle = '#1a3d1e';
+    g.fillRect(Math.random() * W, Math.random() * H, 1, 5 + Math.random() * 9);
+  }
   g.globalAlpha = 1;
+  // worn dirt smudge between the hashes, heaviest mid-field
+  const wear = g.createRadialGradient(W / 2, H / 2, 40, W / 2, H / 2, W * 0.32);
+  wear.addColorStop(0, 'rgba(96,84,44,0.16)');
+  wear.addColorStop(0.6, 'rgba(88,80,42,0.07)');
+  wear.addColorStop(1, 'rgba(80,76,40,0)');
+  g.fillStyle = wear;
+  g.fillRect(W * 0.14, H * 0.32, W * 0.72, H * 0.36);
 
   // --- end zones ---
   const paintEndzone = (x0, team, flip) => {
@@ -94,8 +104,10 @@ function paintFieldTexture() {
 
   // --- yard numbers every 10 yds, both sides, with direction arrows ---
   const numFont = Math.floor(ppyY * 3.4);
-  g.fillStyle = 'rgba(255,255,255,0.92)';
-  g.font = `800 ${numFont}px "Arial Narrow", Arial, sans-serif`;
+  g.fillStyle = 'rgba(255,255,255,0.94)';
+  g.strokeStyle = 'rgba(10,30,16,0.55)';
+  g.lineWidth = Math.max(2, numFont * 0.05);
+  g.font = `900 ${numFont}px "Arial Narrow", Arial, sans-serif`;
   g.textAlign = 'center'; g.textBaseline = 'middle';
   for (let x = -40; x <= 40; x += 10) {
     const label = 50 - Math.abs(x);
@@ -106,8 +118,9 @@ function paintFieldTexture() {
       g.save();
       g.translate(yd(x), yPx);
       g.rotate(rot);
-      const s = String(numStr).padStart(2, ' ');
-      g.fillText(label === 50 ? '5 0' : `${Math.floor(label / 10)} ${label % 10 === 0 ? 0 : label % 10}`, 0, 0);
+      const numText = label === 50 ? '5 0' : `${Math.floor(label / 10)} ${label % 10 === 0 ? 0 : label % 10}`;
+      g.strokeText(numText, 0, 0);
+      g.fillText(numText, 0, 0);
       // direction arrow beside numbers (not at 50)
       if (label !== 50) {
         const dir = x < 0 ? -1 : 1;               // arrow points toward nearest goal line
@@ -140,6 +153,26 @@ function paintFieldTexture() {
   g.fillText('GP', 0, R * 0.05); g.restore();
   g.restore();
 
+  // --- baked stadium lighting: warm elliptical pools from the four towers ---
+  g.globalCompositeOperation = 'overlay';
+  for (const [fx, fy] of [[0.22, 0.18], [0.78, 0.18], [0.22, 0.82], [0.78, 0.82]]) {
+    const pool = g.createRadialGradient(W * fx, H * fy, 60, W * fx, H * fy, W * 0.34);
+    pool.addColorStop(0, 'rgba(255,243,210,0.34)');
+    pool.addColorStop(0.55, 'rgba(255,240,205,0.14)');
+    pool.addColorStop(1, 'rgba(255,238,200,0)');
+    g.fillStyle = pool;
+    g.fillRect(0, 0, W, H);
+  }
+  // perimeter falloff: corners and edges sink into the night
+  g.globalCompositeOperation = 'multiply';
+  const edge = g.createRadialGradient(W / 2, H / 2, H * 0.4, W / 2, H / 2, W * 0.62);
+  edge.addColorStop(0, 'rgba(255,255,255,1)');
+  edge.addColorStop(0.75, 'rgba(225,228,235,1)');
+  edge.addColorStop(1, 'rgba(168,175,192,1)');
+  g.fillStyle = edge;
+  g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'source-over';
+
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 8;
@@ -159,7 +192,7 @@ export function buildField(scene) {
   // surrounding apron (track / concrete ring)
   const apron = new THREE.Mesh(
     new THREE.PlaneGeometry(FIELD.length + 30, FIELD.width + 26),
-    new THREE.MeshStandardMaterial({ color: 0x27313d, roughness: 0.95 })
+    new THREE.MeshStandardMaterial({ color: 0x1b232e, roughness: 0.95 })
   );
   apron.rotation.x = -Math.PI / 2;
   apron.position.y = -0.02;
@@ -171,11 +204,23 @@ export function buildField(scene) {
     group.add(buildGoalPost(side * 60, side));
   }
 
-  // --- LOS (blue) and first-down (yellow) broadcast lines ---
-  const mkLine = (color, opacity) => {
+  // --- LOS (blue) and first-down (yellow) broadcast lines, feathered like keyed graphics ---
+  const featherTex = (() => {
+    const c = document.createElement('canvas');
+    c.width = 64; c.height = 4;
+    const g = c.getContext('2d');
+    const grad = g.createLinearGradient(0, 0, 64, 0);
+    grad.addColorStop(0, 'rgba(255,255,255,0)');
+    grad.addColorStop(0.3, 'rgba(255,255,255,1)');
+    grad.addColorStop(0.7, 'rgba(255,255,255,1)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = grad; g.fillRect(0, 0, 64, 4);
+    return new THREE.CanvasTexture(c);
+  })();
+  const mkLine = (color, opacity, width) => {
     const m = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.35, FIELD.width),
-      new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false })
+      new THREE.PlaneGeometry(width, FIELD.width),
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false, alphaMap: featherTex })
     );
     m.rotation.x = -Math.PI / 2;
     m.rotation.z = Math.PI / 2;
@@ -184,12 +229,13 @@ export function buildField(scene) {
     group.add(m);
     return m;
   };
-  const losLine = mkLine(0x2b6fff, 0.75);
-  const fdLine = mkLine(0xffd400, 0.85);
+  const losLine = mkLine(0x2b6fff, 0.72, 0.32);
+  const fdLine = mkLine(0xffd400, 0.9, 0.5);
 
   scene.add(group);
   return {
     group,
+    losLine, fdLine,
     setLines(losX, fdX) {
       losLine.position.x = losX;
       fdLine.position.x = Math.min(fdX, 50);
@@ -202,23 +248,28 @@ function buildGoalPost(x, side) {
   const g = new THREE.Group();
   const mat = new THREE.MeshStandardMaterial({ color: 0xffc61e, roughness: 0.35, metalness: 0.6 });
   const r = 0.18;
-  // base + gooseneck
+  // padded base + gooseneck
   const base = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.4, r * 1.6, 2.6, 12), mat);
   base.position.set(x + side * 1.6, 1.3, 0);
   g.add(base);
+  const pad = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.55, 0.62, 2.0, 12),
+    new THREE.MeshStandardMaterial({ color: 0x0b2545, roughness: 0.85 })
+  );
+  pad.position.set(x + side * 1.6, 1.0, 0);
+  g.add(pad);
   const neck = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 3.4, 12), mat);
   neck.position.set(x + side * 0.8, 3.2, 0);
   neck.rotation.z = side * 0.5;
   g.add(neck);
-  // crossbar at 10ft ≈ 3.33yd... use 3.33
   const cross = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 6.17, 12), mat);
   cross.rotation.x = Math.PI / 2;
   cross.position.set(x, 3.33, 0);
   g.add(cross);
-  // uprights 35ft tall ≈ 11.6yd
+  // uprights: tall, slightly tapered
   for (const zc of [-3.08, 3.08]) {
-    const up = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.8, r * 0.8, 11.6, 12), mat);
-    up.position.set(x, 3.33 + 5.8, zc);
+    const up = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.62, r * 0.85, 12.6, 12), mat);
+    up.position.set(x, 3.33 + 6.3, zc);
     up.castShadow = true;
     g.add(up);
   }
